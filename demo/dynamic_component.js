@@ -5,7 +5,7 @@ yk.package('yk.demo');
  * @inherits {yk.ui.DynamicComponent}
  */
 yk.demo.Header = function() {
-    this.super('/sample/static/demo/data/profile.json');
+    this.super('/web-static/demo/data/profile.json');
 };
 yk.inherits(yk.demo.Header, yk.ui.DynamicComponent);
 
