@@ -57,9 +57,17 @@ yk.ui.Component.prototype.render = function(opt_parentEl) {
 /**
  * @param {!string} type
  * @param {!function} listener
+ * @param {Object=} opt_scope
  */
-yk.ui.Component.prototype.bind = function(type, listener) {
-    this.$el_.bind(type, listener);
+yk.ui.Component.prototype.bind = function(type, listener, opt_scope) {
+    var self = this;
+    var scope = opt_scope || this;
+    this.$el_.bind(type, function(e) {
+        listener.call(scope, {
+            target: self,
+            wrapped: e
+        });
+    });
 };
 
 /**
@@ -132,10 +140,11 @@ yk.ui.DynamicComponent.prototype.failure = yk.abstractMethod;
  * @inherits {yk.ui.Component}
  */
 yk.ui.control.AbstractControl = function(opt_options) {
+
     /**
      *
      * @type {!Object}
-     * @private
+     * @protected
      */
     this.options_ = opt_options || {};
 };
@@ -199,6 +208,12 @@ yk.ui.control.Checkbox = function(opt_options, opt_label) {
      * @private
      */
     this.$input_;
+
+    /**
+     * @type {boolean}
+     * @private
+     */
+    this.checked_ = !!this.options_['checked'] || false;
 };
 yk.inherits(yk.ui.control.Checkbox, yk.ui.control.AbstractControl);
 
@@ -212,6 +227,10 @@ yk.ui.control.Checkbox.prototype.createDom = function() {
         }
         this.$el_.append($('<label>').attr('for', this.$input_.attr('id')).text(this.label_));
     }
+
+    this.bind('change', function(evt) {
+        this.checked_ = !this.checked_;
+    });
 };
 
 /**
@@ -225,7 +244,7 @@ yk.ui.control.Checkbox.prototype.value = function() {
  * @return {boolean}
  */
 yk.ui.control.Checkbox.prototype.checked = function() {
-    return this.$input_.is(':checked');
+    return this.checked_;
 };
 
 /**

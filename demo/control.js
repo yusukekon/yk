@@ -43,8 +43,6 @@ yk.demo.ControlComponent.prototype.createDom = function() {
 
     var self = this;
     this.button_.bind('click', function(evt) {
-        // @TODO
-        // var value = evt.target.value();
         var value = self.textbox_.value();
         if (value !== '') {
             window.alert(value);
@@ -54,18 +52,14 @@ yk.demo.ControlComponent.prototype.createDom = function() {
 
     this.checkbox_ = new yk.ui.control.Checkbox({
         name: 'check',
-        value: '1',
-        checked: false
+        value: '1'
     }, 'check1');
     this.addChild(this.checkbox_);
 
-    /**
-     * @TODO イベントが期待通りに動かない
-    this.checkbox_.bind('click', function(e) {
-        var el = e.target;
+    this.checkbox_.bind('change', function(evt) {
+        var el = evt.target;
         if (el.checked()) {
             window.alert(el.value())
         }
     });
-     */
 };
