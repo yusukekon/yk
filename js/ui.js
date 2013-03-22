@@ -1,4 +1,5 @@
 yk.package('yk.ui');
+yk.package('yk.ui.control');
 
 /**
  * var c = yk.ui.Component();
@@ -9,7 +10,7 @@ yk.package('yk.ui');
  * @inherits {yk.Object}
  */
 yk.ui.Component = function() {
-    this.super();
+    yk.super(this);
 
     /**
      * @type {$}
@@ -27,6 +28,15 @@ yk.inherits(yk.ui.Component, yk.Object);
 yk.ui.Component.prototype.createDom = function() {
     this.$el_ = $('<div>');
 };
+
+/**
+ *
+ * @return {$}
+ */
+yk.ui.Component.prototype.getElement = function() {
+    return this.$el_;
+};
+
 
 /**
  * @param {Element=|string=} opt_parentEl
@@ -56,7 +66,7 @@ yk.ui.DynamicComponent = function(url, opt_dataType) {
      */
     this.dataType_ = opt_dataType || 'json';
 
-    this.super(yk.slice(arguments, 1));
+    yk.super(this);
 };
 yk.inherits(yk.ui.DynamicComponent, yk.ui.Component);
 
@@ -88,3 +98,24 @@ yk.ui.DynamicComponent.prototype.createDynamicDom = yk.abstractMethod;
  * @param {xhr} xhr
  */
 yk.ui.DynamicComponent.prototype.failure = yk.abstractMethod;
+
+
+/**
+ * @constructor
+ * @inherits {yk.ui.Component}
+ */
+yk.ui.control.Textbox = function() {
+    yk.super(this);
+
+    /**
+     * @private
+     * @type {string}
+     */
+    this.value_ = null;
+};
+yk.inherits(yk.ui.control.Textbox, yk.ui.Component);
+
+/** @override */
+yk.ui.control.Textbox.prototype.createDom = function() {
+    this.$el_ = $('<div class="control-textbox"><input type="text"></div>');
+};

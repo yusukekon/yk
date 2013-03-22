@@ -6,8 +6,8 @@ var yk = yk || {};
 yk.global = this;
 
 /**
- * @param {Object} childClass
- * @param {Object} parentClass
+ * @param {!Object} childClass
+ * @param {!Object} parentClass
  */
 yk.inherits = function(childClass, parentClass) {
   /** @constructor */
@@ -17,6 +17,23 @@ yk.inherits = function(childClass, parentClass) {
   childClass.prototype = new temp();
   /** @override */
   childClass.prototype.constructor = childClass;
+};
+
+/**
+ * @param {!Object} self
+ * @param {string=} opt_name
+ * @param {...*} var_args
+ * @return {*}
+ */
+yk.super = function(self, opt_name, var_args) {
+    var caller = arguments.callee.caller;
+    if (caller.__super__) {
+        return caller.__super__.constructor.apply(self, yk.slice(arguments, 1));
+    }
+    if (!opt_name) {
+        throw Error('name must be not null');
+    }
+    return self.constructor.__super__[opt_name].apply(self, yk.slice(arguments, 2));
 };
 
 /**
@@ -60,18 +77,3 @@ yk.slice = function(array, opt_index) {
 yk.Object = function() {
 };
 yk.inherits(yk.Object, Object);
-
-/**
- * @param {string=} opt_name
- * @param {...*} var_args
- * @return {*}
- * @protected
- */
-yk.Object.prototype.super = function(opt_name, var_args) {
-    var caller = arguments.callee.caller;
-    if (caller.__super__) {
-        return caller.__super__.constructor.apply(this, arguments);
-    }
-    var args = yk.slice(arguments);
-    return this.constructor.__super__[args[0]].apply(this, args.slice(1));
-};
