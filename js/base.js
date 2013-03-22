@@ -72,8 +72,40 @@ yk.slice = function(array, opt_index) {
 };
 
 /**
+ * @TODO ちゃんとする
+ * @return {number}
+ */
+yk.generateUniqueId = function() {
+    return String(Math.floor(Math.random() * 1000000));
+};
+
+/**
  * @constructor
  */
 yk.Object = function() {
+    /**
+     * @type {string}
+     * @private
+     */
+    this.objectId_ ;
 };
 yk.inherits(yk.Object, Object);
+
+/**
+ * @return {string}
+ */
+yk.Object.prototype.hashcode = function() {
+    return this.objectId_ || (this.objectId_ = yk.generateUniqueId());
+};
+
+/**
+ *
+ * @param {*} target
+ * @return {boolean}
+ */
+yk.Object.prototype.equals = function(target) {
+    if (!target || !(target instanceof yk.Object)) {
+        return false;
+    }
+    return (this === target && this.hashcode() === target.hashcode());
+}

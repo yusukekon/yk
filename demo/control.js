@@ -13,11 +13,17 @@ yk.demo.ControlComponent = function() {
      */
     this.textbox_;
 
-     /**
+    /**
      * @type {yk.ui.control.Button}
      * @private
      */
     this.button_;
+
+    /**
+     * @type {yk.ui.control.Checkbox}
+     * @private
+     */
+    this.checkbox_;
 };
 yk.inherits(yk.demo.ControlComponent, yk.ui.Component);
 
@@ -37,9 +43,29 @@ yk.demo.ControlComponent.prototype.createDom = function() {
 
     var self = this;
     this.button_.bind('click', function(evt) {
+        // @TODO
+        // var value = evt.target.value();
         var value = self.textbox_.value();
         if (value !== '') {
             window.alert(value);
         }
     });
+    this.$el_.append($('<div>'));
+
+    this.checkbox_ = new yk.ui.control.Checkbox({
+        name: 'check',
+        value: '1',
+        checked: false
+    }, 'check1');
+    this.addChild(this.checkbox_);
+
+    /**
+     * @TODO イベントが期待通りに動かない
+    this.checkbox_.bind('click', function(e) {
+        var el = e.target;
+        if (el.checked()) {
+            window.alert(el.value())
+        }
+    });
+     */
 };

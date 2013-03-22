@@ -175,6 +175,60 @@ yk.ui.control.Textbox.prototype.value = function(opt_value) {
 };
 
 /**
+ * new yk.ui.control.Checkbox({
+ *     name: 'sample',
+ *     value: 1,
+ *     checked: false
+ * }, 'label for checkbox');
+ *
+ * @param {Object=} opt_options
+ * @param {string=} opt_label
+ * @constructor
+ * @inherits {yk.ui.control.AbstractControl}
+ */
+yk.ui.control.Checkbox = function(opt_options, opt_label) {
+    yk.super(this, opt_options);
+
+    /**
+     * @type {string=} opt_label
+     */
+    this.label_ = opt_label || null;
+
+    /**
+     * @type {$}
+     * @private
+     */
+    this.$input_;
+};
+yk.inherits(yk.ui.control.Checkbox, yk.ui.control.AbstractControl);
+
+/** @override */
+yk.ui.control.Checkbox.prototype.createDom = function() {
+    this.$input_ = $('<input type="checkbox">').attr(this.options_);
+    this.$el_ = $('<span class="control-checkbox">').append(this.$input_);
+    if (this.label_) {
+        if (!this.$input_.attr('id')) {
+            this.$input_.attr('id', this.hashcode());
+        }
+        this.$el_.append($('<label>').attr('for', this.$input_.attr('id')).text(this.label_));
+    }
+};
+
+/**
+ * @return {string}
+ */
+yk.ui.control.Checkbox.prototype.value = function() {
+    return this.$input_.val();
+};
+
+/**
+ * @return {boolean}
+ */
+yk.ui.control.Checkbox.prototype.checked = function() {
+    return this.$input_.is(':checked');
+};
+
+/**
  * @param {Object=} opt_options
  * @constructor
  * @inherits {yk.ui.control.AbstractControl}
