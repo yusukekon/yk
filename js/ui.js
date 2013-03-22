@@ -55,6 +55,14 @@ yk.ui.Component.prototype.render = function(opt_parentEl) {
 };
 
 /**
+ * @param {!string} type
+ * @param {!function} listener
+ */
+yk.ui.Component.prototype.bind = function(type, listener) {
+    this.$el_.bind(type, listener);
+};
+
+/**
  * @param {string} url
  * @param {string=} opt_dataType
  * @constructor
@@ -152,7 +160,7 @@ yk.inherits(yk.ui.control.Textbox, yk.ui.control.AbstractControl);
 /** @override */
 yk.ui.control.Textbox.prototype.createDom = function() {
     this.$input_ = $('<input type="text">').attr(this.options_);
-    this.$el_ = $('<div class="control-textbox">').append(this.$input_);
+    this.$el_ = $('<span class="control-textbox">').append(this.$input_);
 };
 
 /**
@@ -160,7 +168,10 @@ yk.ui.control.Textbox.prototype.createDom = function() {
  * @return {string}
  */
 yk.ui.control.Textbox.prototype.value = function(opt_value) {
-    return this.$input_.val(opt_value);
+    if (opt_value === undefined) {
+        return this.$input_.val();
+    }
+    return this.$input_.val(opt_value).value();
 };
 
 /**
@@ -176,5 +187,5 @@ yk.inherits(yk.ui.control.Button, yk.ui.control.AbstractControl);
 /** @override */
 yk.ui.control.Button.prototype.createDom = function() {
     var $button= $('<input type="button">').attr(this.options_);
-    this.$el_ = $('<div class="control-button">').append($button);
+    this.$el_ = $('<span class="control-button">').append($button);
 };

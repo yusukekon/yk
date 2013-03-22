@@ -12,6 +12,12 @@ yk.demo.ControlComponent = function() {
      * @private
      */
     this.textbox_;
+
+     /**
+     * @type {yk.ui.control.Button}
+     * @private
+     */
+    this.button_;
 };
 yk.inherits(yk.demo.ControlComponent, yk.ui.Component);
 
@@ -25,7 +31,15 @@ yk.demo.ControlComponent.prototype.createDom = function() {
     this.addChild(this.textbox_);
 
     this.button_ = new yk.ui.control.Button({
-        value: 'demo'
+        value: 'show'
     });
     this.addChild(this.button_);
+
+    var self = this;
+    this.button_.bind('click', function(evt) {
+        var value = self.textbox_.value();
+        if (value !== '') {
+            window.alert(value);
+        }
+    });
 };
