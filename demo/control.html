@@ -8,13 +8,11 @@
     <script type="text/javascript" src="/web-static/demo/templates.js"></script>
   </head>
   <body>
-    <div id="header"></div>
-    <div id="contents">static js test</div>
-    <div id="footer"></div>
-  <script type="text/javascript" src="/web-static/demo/dynamic_component.js"></script>
+    <div id="contents"></div>
+  <script type="text/javascript" src="/web-static/demo/control.js"></script>
   <script>
-var header = new yk.demo.Header();
-header.render("#header");
+var control = new yk.demo.ControlComponent();
+control.render('#contents');
   </script>
   </body>
 </html>
