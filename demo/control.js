@@ -24,6 +24,12 @@ yk.demo.ControlComponent = function() {
      * @private
      */
     this.checkbox_;
+
+    /**
+     * @type {yk.ui.control.RadioButtons}
+     * @private
+     */
+    this.radioButtons_;
 };
 yk.inherits(yk.demo.ControlComponent, yk.ui.Component);
 
@@ -60,6 +66,28 @@ yk.demo.ControlComponent.prototype.createDom = function() {
         var el = evt.target;
         if (el.checked()) {
             window.alert(el.value())
+        }
+    });
+
+    this.$el_.append($('<div>'));
+
+    this.radioButtons = new yk.ui.control.RadioButtons({
+        name: 'radiotest',
+        default: 2,
+        alignVertical: true
+    });
+    this.radioButtons.append(new yk.ui.control.RadioButton({
+        value: 1
+    }, 'radio1'));
+    this.radioButtons.append(new yk.ui.control.RadioButton({
+        value: 2
+    }, 'radio2'));
+    this.addChild(this.radioButtons);
+
+    this.radioButtons.bind('change', function(evt) {
+        var current = evt.target.checked();
+        if (current.value() === '1') {
+            window.alert(current.value());
         }
     });
 };
