@@ -76,12 +76,8 @@ yk.demo.ControlComponent.prototype.createDom = function() {
         default: 2,
         alignVertical: true
     });
-    this.radioButtons.append(new yk.ui.control.RadioButton({
-        value: 1
-    }, 'radio1'));
-    this.radioButtons.append(new yk.ui.control.RadioButton({
-        value: 2
-    }, 'radio2'));
+    this.radioButtons.add({value: 1}, 'radio1');
+    this.radioButtons.add({value: 2}, 'radio2');
     this.addChild(this.radioButtons);
 
     this.radioButtons.bind('change', function(evt) {

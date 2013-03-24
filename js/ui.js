@@ -207,10 +207,11 @@ yk.ui.control.AbstractControl.prototype.setOption = function(key, value) {
 
 /**
  * @param key
+ * @param {*=} opt_default
  * @return {*}
  */
-yk.ui.control.AbstractControl.prototype.getOption = function(key) {
-    return this.options_[key];
+yk.ui.control.AbstractControl.prototype.getOption = function(key, opt_default) {
+    return this.options_[key] || opt_default || null;
 };
 
 /**
@@ -276,7 +277,7 @@ yk.ui.control.Checkbox = function(opt_options, opt_label) {
      * @type {boolean}
      * @private
      */
-    this.checked_ = !!this.options_['checked'] || false;
+    this.checked_ = this.options_['checked'] === true;
 };
 yk.inherits(yk.ui.control.Checkbox, yk.ui.control.AbstractControl);
 
@@ -284,9 +285,6 @@ yk.inherits(yk.ui.control.Checkbox, yk.ui.control.AbstractControl);
 yk.ui.control.Checkbox.prototype.createDom = function() {
     this.$input_ = $('<input type="checkbox">').attr(this.options_);
     this.$el_ = $('<span class="control-checkbox">').append(this.$input_);
-    if (this.getOption('alignVertical') === true) {
-        this.$el_ = $('<div>').append(this.$el_);
-    }
     if (this.label_) {
         if (!this.$input_.attr('id')) {
             this.$input_.attr('id', this.hashcode());
@@ -314,19 +312,21 @@ yk.ui.control.Checkbox.prototype.checked = function() {
 };
 
 /**
- * new yk.ui.control.RadioButton({
- *     name: 'sample',
- *     value: 1,
- *     checked: false
- * }, 'label for checkbox');
- *
+*
+ * @param {yk.ui.control.RadioButtons} group
  * @param {Object=} opt_options
  * @param {string=} opt_label
  * @constructor
  * @inherits {yk.ui.control.AbstractControl}
  */
-yk.ui.control.RadioButton = function(opt_options, opt_label) {
+yk.ui.control.RadioButton = function(group, opt_options, opt_label) {
     yk.super(this, opt_options);
+
+    /**
+     * @type {yk.ui.control.RadioButtons}
+     * @private
+     */
+    this.group_ = group;
 
     /**
      * @type {string=} opt_label
@@ -343,13 +343,7 @@ yk.ui.control.RadioButton = function(opt_options, opt_label) {
      * @type {boolean}
      * @private
      */
-    this.checked_ = !!this.options_['checked'] || false;
-
-    /**
-     * @type {yk.ui.control.RadioButtons}
-     * @private
-     */
-    this.group_;
+    this.checked_ = group.getOption('default') === this.getOption('value');
 };
 yk.inherits(yk.ui.control.RadioButton , yk.ui.control.AbstractControl);
 
@@ -357,7 +351,7 @@ yk.inherits(yk.ui.control.RadioButton , yk.ui.control.AbstractControl);
 yk.ui.control.RadioButton.prototype.createDom = function() {
     this.$input_ = $('<input type="radio">').attr(this.options_);
     this.$el_ = $('<span class="control-radio">').append(this.$input_);
-    if (this.getOption('alignVertical') === true) {
+    if (this.group_.getOption('alignVertical') === true) {
         this.$el_ = $('<div>').append(this.$el_);
     }
     if (this.label_) {
@@ -391,13 +385,6 @@ yk.ui.control.RadioButton.prototype.checked = function(checked) {
 };
 
 /**
- * @param {yk.ui.control.RadioButton} group
- */
-yk.ui.control.RadioButton.prototype.setGroup = function(group) {
-    return this.group_ = group;
-};
-
-/**
  * new yk.ui.control.RadioButtons({
  *     name: 'hoge',
  *     default: 1,
@@ -425,11 +412,11 @@ yk.inherits(yk.ui.control.RadioButtons, yk.ui.control.AbstractControl);
 
 
 /**
- * @param {yk.ui.control.RadioButton} radio
+ * @param {Object=} opt_options
+ * @param {string=} opt_label
  */
-yk.ui.control.RadioButtons.prototype.append = function(radio) {
-    this.inputs_.push(radio);
-    radio.setGroup(this);
+yk.ui.control.RadioButtons.prototype.add = function(opt_options, opt_label) {
+    this.inputs_.push(new yk.ui.control.RadioButton(this, opt_options, opt_label));
 };
 
 /** @override */
@@ -439,8 +426,6 @@ yk.ui.control.RadioButtons.prototype.createDom = function() {
     var self = this;
     this.inputs_.forEach(function(input) {
         input.setOption('name', self.getOption('name'));
-        input.setOption('alignVertical', self.getOption('alignVertical'));
-
         var checked = input.getOption('value') === self.getOption('default');
         input.setOption('checked', checked);
         if (checked) {
