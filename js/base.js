@@ -42,7 +42,7 @@ yk.super = function(self, opt_name, var_args) {
 yk.package = function(def) {
     var parent = yk.global;
     def.split('.').forEach(function(name) {
-        if (!parent.hasOwnProperty()) {
+        if (!parent.hasOwnProperty(name)) {
             parent[name] = {};
         }
         parent = parent[name];

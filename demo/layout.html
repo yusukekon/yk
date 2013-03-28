@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="/web-static/3rd-party/normalize.css/normalize.css">
+    <script type="text/javascript" src="/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="/jquery-template.min.js"></script>
+    <script type="text/javascript" src="/web-static/js/base.js"></script>
+    <script type="text/javascript" src="/web-static/js/ui.js"></script>
+    <script type="text/javascript" src="/web-static/demo/templates.js"></script>
+    <script type="text/javascript" src="/web-static/demo/layout.js"></script>
+  </head>
+  <body>
+    <div id="contents"></div>
+  <script>
+var data = [
+    {
+        id: 1,
+        name: 'hoge',
+        desc: 'this is hoge'
+    },
+    {
+        id: 2,
+        name: 'fuga',
+        desc: 'this is fuga'
+    }
+];
+
+var layout = new yk.demo.LayoutComponent(data);
+layout.render('#contents');
+  </script>
+  </body>
+</html>
