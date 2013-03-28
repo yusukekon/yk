@@ -1,5 +1,6 @@
 yk.package('yk.ui');
 yk.package('yk.ui.control');
+yk.package('yk.ui.layout');
 
 /**
  * var c = yk.ui.Component();
@@ -292,9 +293,18 @@ yk.ui.control.Checkbox.prototype.createDom = function() {
         this.$el_.append($('<label>').attr('for', this.$input_.attr('id')).text(this.label_));
     }
 
+    var self = this;
     this.bind('change', function(evt) {
-        this.checked_ = !this.checked_;
+        self.handleChange_(evt);
     });
+    this.listen('change', function(evt) {
+        self.handleChange_(evt);
+        this.$input_.attr('checked', this.checked_);
+    });
+};
+
+yk.ui.control.Checkbox.prototype.handleChange_ = function(evt) {
+    this.checked_ = !this.checked_;
 };
 
 /**
@@ -464,4 +474,121 @@ yk.inherits(yk.ui.control.Button, yk.ui.control.AbstractControl);
 yk.ui.control.Button.prototype.createDom = function() {
     var $button= $('<input type="button">').attr(this.options_);
     this.$el_ = $('<span class="control-button">').append($button);
+};
+
+/**
+ * @constructor
+ * @inherits {yk.ui.Component}
+ */
+yk.ui.layout.Table = function() {
+    yk.super(this);
+
+    /**
+     * @type {Array.<yk.ui.layout.Table.Row>}
+     * @private
+     */
+    this.rows_ = [];
+};
+yk.inherits(yk.ui.layout.Table, yk.ui.Component);
+
+/** @override */
+yk.ui.layout.Table.prototype.createDom = function() {
+    this.$el_ = $('<table>');
+
+    var self = this;
+    this.rows_.forEach(function(row) {
+        self.addChild(row);
+    });
+};
+
+/**
+ * @param {Array.<string|yk.ui.Component>} cells
+ */
+yk.ui.layout.Table.prototype.newRow = function(cells) {
+    this.append(new yk.ui.layout.Table.Row(cells));
+};
+
+/**
+ * @param {yk.ui.layout.Table.Row} row
+ */
+yk.ui.layout.Table.prototype.append = function(row) {
+    this.rows_.push(row);
+};
+
+/**
+ * @param {Array.<string|yk.ui.Component>=} opt_cells
+ * @param {string=} opt_tag
+ * @constructor
+ * @inherits {yk.ui.Component}
+ */
+yk.ui.layout.Table.Row = function(opt_cells, opt_tag) {
+    yk.super(this);
+
+    /**
+     * @type {Array.<yk.ui.layout.Table.Cell>}
+     * @protected
+     */
+    this.cells_ = yk.ui.layout.Table.Row.toCell(opt_cells);
+
+    /**
+     * <tr> | <thead> | <tfoot>
+     * @type {!string}
+     * @private
+     */
+    this.tag_ = opt_tag || '<tr>';
+};
+yk.inherits(yk.ui.layout.Table.Row, yk.ui.Component);
+
+/**
+ *
+ * @param {Array.<string|yk.ui.Component>} target
+ * @return {?Array.<yk.ui.layout.Table.Row>}
+ */
+yk.ui.layout.Table.Row.toCell = function(target) {
+    return (target || []).map(function(each) {
+        return new yk.ui.layout.Table.Cell(each)
+    });
+};
+
+/**
+ * @param {string|yk.ui.Component} cell
+ */
+yk.ui.layout.Table.Row.prototype.append = function(cell) {
+    this.cells_.push(new yk.ui.layout.Table.Cell(cell));
+};
+
+/** @override */
+yk.ui.layout.Table.Row.prototype.createDom = function() {
+    this.$el_ = $(this.tag_).addClass('layout-table-row');
+
+    var self = this;
+    this.cells_.forEach(function(cell) {
+        self.addChild(cell);
+    });
+};
+
+/**
+ * @param {string|yk.ui.Component} inner
+ * @constructor
+ * @inherits {yk.ui.Component}
+ */
+yk.ui.layout.Table.Cell = function(inner) {
+    yk.super(this);
+
+    /**
+     * @type {string|yk.ui.Component}
+     * @private
+     */
+    this.inner_ = inner;
+};
+yk.inherits(yk.ui.layout.Table.Cell, yk.ui.Component);
+
+/** @override */
+yk.ui.layout.Table.Cell.prototype.createDom = function() {
+    this.$el_ = $('<td class="layout-table-cell">')
+    if (this.inner_ instanceof yk.ui.Component) {
+        this.addChild(this.inner_)
+    } else {
+        this.$el_.text(this.inner_);
+    }
 };
