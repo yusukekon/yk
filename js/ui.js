@@ -233,7 +233,7 @@ yk.inherits(yk.ui.control.Textbox, yk.ui.control.AbstractControl);
 
 /** @override */
 yk.ui.control.Textbox.prototype.createDom = function() {
-    this.$input_ = $('<input type="text">').attr(this.options_);
+    this.$input_ = $('<input type="text">').prop(this.options_);
     this.$el_ = $('<span class="control-textbox">').append(this.$input_);
 };
 
@@ -284,13 +284,13 @@ yk.inherits(yk.ui.control.Checkbox, yk.ui.control.AbstractControl);
 
 /** @override */
 yk.ui.control.Checkbox.prototype.createDom = function() {
-    this.$input_ = $('<input type="checkbox">').attr(this.options_);
+    this.$input_ = $('<input type="checkbox">').prop(this.options_);
     this.$el_ = $('<span class="control-checkbox">').append(this.$input_);
     if (this.label_) {
-        if (!this.$input_.attr('id')) {
-            this.$input_.attr('id', this.hashcode());
+        if (!this.$input_.prop('id')) {
+            this.$input_.prop('id', this.hashcode());
         }
-        this.$el_.append($('<label>').attr('for', this.$input_.attr('id')).text(this.label_));
+        this.$el_.append($('<label>').prop('for', this.$input_.prop('id')).text(this.label_));
     }
 
     var self = this;
@@ -299,7 +299,7 @@ yk.ui.control.Checkbox.prototype.createDom = function() {
     });
     this.listen('change', function(evt) {
         self.handleChange_(evt);
-        this.$input_.attr('checked', this.checked_);
+        this.$input_.prop('checked', this.checked_);
     });
 };
 
@@ -359,16 +359,16 @@ yk.inherits(yk.ui.control.RadioButton , yk.ui.control.AbstractControl);
 
 /** @override */
 yk.ui.control.RadioButton.prototype.createDom = function() {
-    this.$input_ = $('<input type="radio">').attr(this.options_);
+    this.$input_ = $('<input type="radio">').prop(this.options_);
     this.$el_ = $('<span class="control-radio">').append(this.$input_);
     if (this.group_.getOption('alignVertical') === true) {
         this.$el_ = $('<div>').append(this.$el_);
     }
     if (this.label_) {
-        if (!this.$input_.attr('id')) {
-            this.$input_.attr('id', this.hashcode());
+        if (!this.$input_.prop('id')) {
+            this.$input_.prop('id', this.hashcode());
         }
-        this.$el_.append($('<label>').attr('for', this.$input_.attr('id')).text(this.label_));
+        this.$el_.append($('<label>').prop('for', this.$input_.prop('id')).text(this.label_));
     }
 
     this.bind('change', function(evt) {
@@ -472,7 +472,7 @@ yk.inherits(yk.ui.control.Button, yk.ui.control.AbstractControl);
 
 /** @override */
 yk.ui.control.Button.prototype.createDom = function() {
-    var $button= $('<input type="button">').attr(this.options_);
+    var $button= $('<input type="button">').prop(this.options_);
     this.$el_ = $('<span class="control-button">').append($button);
 };
 
@@ -528,7 +528,9 @@ yk.ui.layout.Table.Row = function(opt_cells, opt_tag) {
      * @type {Array.<yk.ui.layout.Table.Cell>}
      * @protected
      */
-    this.cells_ = yk.ui.layout.Table.Row.toCell(opt_cells);
+    this.cells_ = (opt_cells || []).map(function(each) {
+        return new yk.ui.layout.Table.Cell(each)
+    });
 
     /**
      * <tr> | <thead> | <tfoot>
@@ -538,17 +540,6 @@ yk.ui.layout.Table.Row = function(opt_cells, opt_tag) {
     this.tag_ = opt_tag || '<tr>';
 };
 yk.inherits(yk.ui.layout.Table.Row, yk.ui.Component);
-
-/**
- *
- * @param {Array.<string|yk.ui.Component>} target
- * @return {?Array.<yk.ui.layout.Table.Row>}
- */
-yk.ui.layout.Table.Row.toCell = function(target) {
-    return (target || []).map(function(each) {
-        return new yk.ui.layout.Table.Cell(each)
-    });
-};
 
 /**
  * @param {string|yk.ui.Component} cell

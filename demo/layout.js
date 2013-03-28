@@ -61,16 +61,13 @@ yk.inherits(yk.demo.LayoutComponent.HeaderRow, yk.ui.layout.Table.Row);
 
 /** @override */
 yk.demo.LayoutComponent.HeaderRow.prototype.createDom = function() {
-    var checkAllButton = new yk.ui.control.Button({value: 'x'});
-    this.append(checkAllButton);
+    var toggleButton = new yk.ui.control.Button({value: 'x'});
+    this.append(toggleButton);
     this.append('');
     yk.ui.layout.Table.Row.prototype.createDom.call(this);
 
     var self = this;
-    checkAllButton.bind('click', function(evt) {
-        var checkedAll = self.checkboxes_.every(function(input) {
-            return input.checked();
-        });
+    toggleButton.bind('click', function(evt) {
         self.checkboxes_.forEach(function(each) {
             each.fire('change');
         });
