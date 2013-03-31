@@ -62,18 +62,19 @@ yk.abstractFuntion = function() {
 };
 
 /**
- * @param {Object} array
- * @param {number=} opt_index
- * @return {Array}
+ * @param {!Object} array
+ * @param {number=} opt_start
+ * @param {number=} opt_end
+ * @return {Array.<*>}
  */
-yk.slice = function(array, opt_index) {
-    var i = opt_index || 0;
-    return Array.prototype.slice.call(array, i);
+yk.slice = function(array, opt_start, opt_end) {
+    var var_args = Array.prototype.slice.call(arguments, 1);
+    return Array.prototype.slice.apply(array, var_args);
 };
 
 /**
  * @TODO ちゃんとする
- * @return {number}
+ * @return {string}
  */
 yk.generateUniqueId = function() {
     return String(Math.floor(Math.random() * 1000000));

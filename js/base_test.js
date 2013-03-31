@@ -42,3 +42,22 @@ test('yk.super', function() {
     equal(c.id, 'parent');
     equal(c.hoge(), 'hogehoge');
 });
+
+test('yk.slice', function() {
+    var target = [1, 2, 3];
+
+    equal(yk.slice(target).length, 3);
+    equal(yk.slice(target, 1).length, 2);
+    equal(yk.slice(target, 1)[0], 2);
+    equal(yk.slice(target, 1, 2).length, 1);
+    equal(yk.slice(target, 1, 2)[0], 2);
+});
+
+test('yk.Object', function() {
+    var obj1 = new yk.Object();
+    var obj2 = new yk.Object();
+
+    ok(obj1.equals(obj1));
+    ok(obj2.equals(obj2));
+    ok(!obj1.equals(obj2));
+});
