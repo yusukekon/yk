@@ -1,3 +1,6 @@
 [submodule "3rd-party/normalize.css"]
 	path = 3rd-party/normalize.css
 	url = github:necolas/normalize.css
+[submodule "3rd-party/qunit"]
+	path = 3rd-party/qunit
+	url = github:jquery/qunit.git
