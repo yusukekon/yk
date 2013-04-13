@@ -62,11 +62,25 @@ yk.ui.Component.prototype.render = function(opt_parentEl) {
 };
 
 /**
+ *
+ */
+yk.ui.Component.prototype.dispose = function() {
+    if (this.$el_) {
+        this.$el_.remove();
+        this.$el_ = null;
+    }
+    this.handlers_ = null;
+};
+
+/**
  * @param {!string} type
  * @param {!function} listener
  * @param {Object=} opt_scope
  */
 yk.ui.Component.prototype.bind = function(type, listener, opt_scope) {
+    if (!this.$el_) {
+        this.createDom();
+    }
     var self = this;
     var scope = opt_scope || this;
     this.$el_.bind(type, function(e) {

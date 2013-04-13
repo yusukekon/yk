@@ -4,9 +4,12 @@
 	<meta charset="UTF-8">
 	<title>QUnit Main Test Suite</title>
 	<link rel="stylesheet" href="../3rd-party/qunit/qunit/qunit.css">
+    <script src="../3rd-party/jquery-1.9.1.js"></script>
+    <script src="../3rd-party/jquery-template.min.js"></script>
 	<script src="../3rd-party/qunit/qunit/qunit.js"></script>
 </head>
 <body>
+    <div id="sandbox" style="display: none;"></div>
 	<div id="qunit"></div>
 	<div id="qunit-fixture">test markup</div>
 
@@ -14,5 +17,6 @@
     <script src="base_test.js"></script>
 
     <script src="ui.js"></script>
+    <script src="ui_test.js"></script>
 </body>
 </html>
