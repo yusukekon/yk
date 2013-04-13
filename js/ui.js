@@ -406,14 +406,14 @@ yk.ui.control.RadioButton.prototype.value = function() {
 };
 
 /**
- * @param {boolean} checked
+ * @param {boolean=} opt_checked
  * @return {boolean}
  */
-yk.ui.control.RadioButton.prototype.checked = function(checked) {
-    if (checked) {
-        this.checked_ = checked;
+yk.ui.control.RadioButton.prototype.checked = function(opt_checked) {
+    if (opt_checked !== undefined) {
+        this.checked_ = opt_checked;
     }
-    return this.checked_;
+    return Boolean(this.checked_);
 };
 
 /**

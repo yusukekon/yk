@@ -165,9 +165,20 @@ test('ui.control.RadioButton', function() {
     equal('1', radio.getButtons()[0].value());
     equal('2', radio.getButtons()[1].value());
 
+    // 初期状態では 1 が選択されてる
     equal('1', radio.checked().value());
+    ok(radio.getButtons()[0].checked());
+    ok(!radio.getButtons()[1].checked());
+
+    // ネイティブイベントで 2 を選択。
     radio.getButtons()[1].trigger('change');
     equal('2', radio.checked().value());
+    ok(!radio.getButtons()[0].checked());
+    ok(radio.getButtons()[1].checked());
+
+    // カスタムイベントで再度 1 を選択
     radio.getButtons()[0].fire('change');
     equal('1', radio.checked().value());
+    ok(radio.getButtons()[0].checked());
+    ok(!radio.getButtons()[1].checked());
 });
