@@ -65,6 +65,58 @@ test('ui.Component event', function() {
     ok('hoge', firedEvent.data);
 });
 
+module('ui.DynamicComponent', {
+    setup: function() {
+        $sandbox = $('#sandbox');
+
+        function SampleDynamicComponent() {
+            yk.super(this);
+        };
+        yk.inherits(SampleDynamicComponent, yk.ui.DynamicComponent);
+
+        SampleDynamicComponent.prototype.setUrl = function(url) {
+            this.url_ = url;
+        };
+
+        SampleDynamicComponent.prototype.createDynamicDom = function(json) {
+            this.$el_ = $('<div>');
+            json.forEach(function(id) {
+                $('<div>').prop('id', id).appendTo(this.$el_);
+            }, this);
+        };
+        SampleDynamicComponent.prototype.failure = function(xhr) {
+            this.$el_ = $('<div>').text('failure');
+        };
+        component = new SampleDynamicComponent();
+        stub = sinon.stub(jQuery, "ajax");
+    },
+    teardown: function() {
+        component.dispose();
+        stub.restore();
+    }
+});
+
+test('ui.DynamicComponent success', function() {
+    var deferred = new $.Deferred();
+    stub.returns(deferred.resolve([1, 2]).promise());
+    component.render($sandbox);
+
+    equal(1, $sandbox.children().length);
+    equal(2, component.getElement().children().length);
+    equal(1, component.getElement().children()[0].id);
+    equal(2, component.getElement().children()[1].id);
+
+});
+
+test('ui.DynamicComponent failure', function() {
+    var deferred = new $.Deferred();
+    stub.returns(deferred.reject().promise());
+    component.render($sandbox);
+
+    equal(1, $sandbox.children().length);
+    equal('failure', component.getElement().text());
+});
+
 module('ui.control.Textbox', {
     setup: function() {
         $sandbox = $('#sandbox');

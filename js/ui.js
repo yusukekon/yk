@@ -52,9 +52,11 @@ yk.ui.Component.prototype.getElement = function() {
 
 /**
  * @param {Element=|string=} opt_parentEl
+ * @param {boolean=} opt_force
  */
-yk.ui.Component.prototype.render = function(opt_parentEl) {
-    if (!this.$el_) {
+yk.ui.Component.prototype.render = function(opt_parentEl, opt_force) {
+    var force = opt_force || false;
+    if (!this.$el_ || force) {
         this.createDom();
     }
     var parentEl = opt_parentEl || document.body;
@@ -167,6 +169,8 @@ yk.ui.DynamicComponent.prototype.createDom = function() {
         dataType: this.dataType_
     }).done(function(data) {
         self.createDynamicDom(data);
+    }).fail(function(xhr) {
+        self.failure(xhr);
     });
 };
 
@@ -177,8 +181,9 @@ yk.ui.DynamicComponent.prototype.render = function(opt_parentEl) {
     }
 
     var self = this;
-    this.$deferred.done(function() {
-        yk.ui.Component.prototype.render.call(self, opt_parentEl);
+    var parentEl = opt_parentEl || document;
+    this.$deferred.always(function() {
+        self.$el_ && yk.ui.Component.prototype.render.call(self, parentEl);
     });
 };
 
