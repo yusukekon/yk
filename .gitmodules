@@ -4,3 +4,6 @@
 [submodule "3rd-party/qunit"]
 	path = 3rd-party/qunit
 	url = github:jquery/qunit.git
+[submodule "3rd-party/sinonjs"]
+	path = 3rd-party/sinonjs
+	url = github:cjohansen/Sinon.JS.git
