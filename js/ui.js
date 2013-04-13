@@ -259,7 +259,8 @@ yk.ui.control.Textbox.prototype.value = function(opt_value) {
     if (opt_value === undefined) {
         return this.$input_.val();
     }
-    return this.$input_.val(opt_value).value();
+    this.$input_.val(opt_value);
+    return opt_value;
 };
 
 /**
@@ -292,7 +293,7 @@ yk.ui.control.Checkbox = function(opt_options, opt_label) {
      * @type {boolean}
      * @private
      */
-    this.checked_ = this.options_['checked'] === true;
+    this.checked_ = Boolean(this.options_['checked']);
 };
 yk.inherits(yk.ui.control.Checkbox, yk.ui.control.AbstractControl);
 
@@ -375,7 +376,7 @@ yk.inherits(yk.ui.control.RadioButton , yk.ui.control.AbstractControl);
 yk.ui.control.RadioButton.prototype.createDom = function() {
     this.$input_ = $('<input type="radio">').prop(this.options_);
     this.$el_ = $('<span class="control-radio">').append(this.$input_);
-    if (this.group_.getOption('alignVertical') === true) {
+    if (Boolean(this.group_.getOption('alignVertical'))) {
         this.$el_ = $('<div>').append(this.$el_);
     }
     if (this.label_) {
@@ -385,9 +386,16 @@ yk.ui.control.RadioButton.prototype.createDom = function() {
         this.$el_.append($('<label>').prop('for', this.$input_.prop('id')).text(this.label_));
     }
 
-    this.bind('change', function(evt) {
-        this.group_.fire('change', this);
-    });
+    this.bind('change', this.handleChange_);
+    this.listen('change', this.handleChange_);
+};
+
+/**
+ * @param {Event} evt
+ * @private
+ */
+yk.ui.control.RadioButton.prototype.handleChange_ = function(evt) {
+    this.group_.fire('change', this);
 };
 
 /**
@@ -416,31 +424,42 @@ yk.ui.control.RadioButton.prototype.checked = function(checked) {
  * });
  * @param {Object=} opt_options
  * @constructor
+ * @inherits {yk.ui.Control.AbstractControl}
  */
 yk.ui.control.RadioButtons = function(opt_options) {
     yk.super(this, opt_options);
 
     /**
-     * @type {Array.<yk.ui.control.RadioButton>}
+     * @type {!Array.<yk.ui.control.RadioButton>}
      * @private
      */
     this.inputs_ = [];
 
     /**
-     * @type {yk.ui.control.RadioButton}
+     * @type {?yk.ui.control.RadioButton}
      * @private
      */
-    this.checked_;
+    this.checked_ = null;
 };
 yk.inherits(yk.ui.control.RadioButtons, yk.ui.control.AbstractControl);
 
 
 /**
+ * buttons.add({
+ *     value: '1'
+ * }, 'label');
  * @param {Object=} opt_options
  * @param {string=} opt_label
  */
 yk.ui.control.RadioButtons.prototype.add = function(opt_options, opt_label) {
     this.inputs_.push(new yk.ui.control.RadioButton(this, opt_options, opt_label));
+};
+
+/**
+ * @return {!Array.<yk.ui.control.RadioButton>}
+ */
+yk.ui.control.RadioButtons.prototype.getButtons = function() {
+    return this.inputs_;
 };
 
 /** @override */
@@ -453,7 +472,7 @@ yk.ui.control.RadioButtons.prototype.createDom = function() {
         var checked = input.getOption('value') === self.getOption('default');
         input.setOption('checked', checked);
         if (checked) {
-            this.checked_ = input;
+            self.checked_ = input;
         }
         self.addChild(input);
     });
@@ -472,6 +491,14 @@ yk.ui.control.RadioButtons.prototype.createDom = function() {
  */
 yk.ui.control.RadioButtons.prototype.checked = function() {
     return this.checked_;
+};
+
+/** @override */
+yk.ui.control.RadioButtons.prototype.dispose = function() {
+    this.inputs_.forEach(function(radio) {
+        radio.dispose();
+    });
+    yk.super(this, 'dispose')
 };
 
 /**
