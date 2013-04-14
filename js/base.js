@@ -109,4 +109,76 @@ yk.Object.prototype.equals = function(target) {
         return false;
     }
     return (this === target && this.hashcode() === target.hashcode());
-}
+};
+
+/**
+ * native な配列であれば true を返す
+ * @param target
+ * @return {boolean}
+ */
+yk.isArray = function(value) {
+    if (!value) {
+        return false;
+    }
+    if (Array.isArray) {
+        return Array.isArray(value);
+    }
+
+    /** @see http://www.oreilly.co.jp/books/9784873116105/ */
+    return Object.prototype.toString.call(value) === '[object Array]';
+};
+
+/**
+ * @param {*} value
+ * @return {!*}
+ */
+yk.assertDefAndNotNull = function(value) {
+    if (yk.DEBUG && (value === undefined || value === null)) {
+        throw Error("must not be null");
+    }
+    return value;
+};
+
+/**
+ * @param value
+ * @return {string}
+ */
+yk.assertString = function(value) {
+    if (yk.DEBUG && typeof value !== "string") {
+        throw TypeError(name + ' must be string');
+    }
+    return /** @type {string} */(value);
+};
+
+/**
+ * @param value
+ * @return {number}
+ */
+yk.assertNumber = function(value) {
+    if (yk.DEBUG && typeof value !== "number") {
+        throw TypeError(name + ' must be number');
+    }
+    return /** @type {number} */(value);
+};
+
+/**
+ * @param value
+ * @return {boolean}
+ */
+yk.assertBoolean = function(value) {
+    if (yk.DEBUG && typeof value !== "boolean") {
+        throw TypeError(name + ' must be boolean');
+    }
+    return /** @type {boolean} */(value);
+};
+
+/**
+ * @param value
+ * @return Array.<*>
+ */
+yk.assertArray = function(value) {
+    if (yk.DEBUG && !yk.isArray(value)) {
+        throw TypeError('must be array');
+    }
+    return /** @type {Array.<*>} */(value);
+};
