@@ -342,7 +342,7 @@ yk.ui.control.Checkbox.prototype.checked = function() {
 };
 
 /**
-*
+ *
  * @param {yk.ui.control.RadioButtons} group
  * @param {Object=} opt_options
  * @param {string=} opt_label
