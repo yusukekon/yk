@@ -12,6 +12,11 @@ function User(json) {
     this.name;
 
     /**
+     * @type {yk.util.Date}
+     */
+    this.birthday;
+
+    /**
      * @type {Array.<number>}
      */
     this.groups;
@@ -26,6 +31,7 @@ yk.inherits(User, yk.Model);
 User.prototype.load = function(json) {
     this.id = yk.assertNumber(this.get(json, 'id'));
     this.name = yk.assertString(this.get(json, 'name'));
+    this.birthday = yk.util.Date.parse(this.get(json, 'birthday'));
     this.groups = yk.assertArray(this.get(json, 'groups', true, []));
     this.friends = this.getAsArray(json, 'friends').map(function(each) {
         return new User(each);
@@ -40,13 +46,15 @@ test('Model', function() {
         id: 1,
         name: 'hoge',
         groups: [100, 200],
+        birthday: '1984-08-13',
         friends: [
-            {id: 2, name: 'a'},
-            {id: 3, name: 'b'}
+            {id: 2, name: 'a', birthday: '1985-12-24'},
+            {id: 3, name: 'b', birthday: '1985-11-11'}
         ]
     });
     equal(1, user.id);
     equal('hoge', user.name);
+    equal('1984/08/13', user.birthday.format());
     equal(100, user.groups[0]);
     equal(200, user.groups[1]);
     equal(2, user.friends[0].id);
@@ -64,7 +72,7 @@ test('Model error cases', function() {
     // id が number でない
     throws(function() {
         new User({
-            id: "error"
+            id: 'error'
         });
     }, Error);
 });
