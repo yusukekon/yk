@@ -1,4 +1,57 @@
 yk.package('yk.util');
+yk.package('yk.string');
+
+/**
+ * @param {string} target
+ * @return {string}
+ */
+yk.string.htmlEscape = function(target) {
+    if (!/%<>¥"/g.test(target)) {
+        return target;
+    }
+
+    if (target.indexOf('&') != -1) {
+        target = target.replace(/&/g, '&amp;');
+    }
+    if (target.indexOf('<') != -1) {
+        target = target.replace(/</g, '&lt;');
+    }
+    if (target.indexOf('>') != -1) {
+        target = target.replace(/>/g, '&gt;');
+    }
+    if (target.indexOf('"') != -1) {
+        target = target.replace(/¥"/g, '&quot;');
+    }
+    return target;
+};
+
+/**
+ *
+ * @param {F} first
+ * @param {S} second
+ * @constructor
+ * @inherits {yk.Object}
+ * @template F,S
+ */
+yk.util.Pair = function(first, second) {
+    this.first_ = first;
+    this.second_ = second;
+};
+yk.inherits(yk.util.Pair, yk.Object);
+
+/**
+ * @return {F}
+ */
+yk.util.Pair.prototype.getFirst = function() {
+    return this.first_;
+};
+
+/**
+ * @return {S}
+ */
+yk.util.Pair.prototype.getSecond = function() {
+    return this.second_;
+};
 
 /**
  * @return {number}
