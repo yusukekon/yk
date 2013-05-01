@@ -227,12 +227,12 @@ yk.ui.Control.prototype.setOption = function(key, value) {
 };
 
 /**
- *
- * @param {!string} key
+ * @param key
+ * @param {*=} opt_default
  * @return {*}
  */
-yk.ui.Control.prototype.getOption = function(key) {
-    return this.options[key] || null;
+yk.ui.Control.prototype.getOption = function(key, opt_default) {
+    return this.options[key] || opt_default || null;
 };
 
 /**
@@ -241,12 +241,17 @@ yk.ui.Control.prototype.getOption = function(key) {
 yk.ui.Control.prototype.value = yk.abstractFuntion;
 
 /**
+ * @param {boolean=} opt_disabled
+ * @return {boolean}
+ */
+yk.ui.Control.prototype.disabled = yk.abstractFuntion;
+
+/**
  * @return {yk.net.HttpKeyValue}
  */
 yk.ui.Control.prototype.toHttpKeyValue = function() {
     return new yk.net.HttpKeyValue(this.getOption('name'), this.value());
 };
-
 
 /**
  *
@@ -256,18 +261,46 @@ yk.ui.Control.prototype.toHttpKeyValue = function() {
  */
 yk.ui.control.HtmlControl = function(opt_options) {
     yk.super(this, opt_options);
+
+    /**
+     * @type {$}
+     * @protected
+     */
+    this.$input;
 };
 yk.inherits(yk.ui.control.HtmlControl, yk.ui.Control);
 
+/**
+ * @return {$}
+ */
+yk.ui.control.HtmlControl.prototype.getInput = function() {
+    return this.$input;
+};
+
+/** @override */
+yk.ui.control.HtmlControl.prototype.value = function() {
+    return this.getInput().val();
+};
+
+/** @override */
+yk.ui.control.HtmlControl.prototype.disabled = function(opt_disabled) {
+    if (yk.isDef(opt_disabled) && yk.assertBoolean(opt_disabled)) {
+        this.getInput().prop('disabled', opt_disabled);
+        return opt_disabled;
+    }
+    return this.getInput().prop('disabled');
+};
 
 /**
- * @param key
- * @param {*=} opt_default
- * @return {*}
+ *
+ * @param {Object} opt_options
+ * @constructor
+ * @inherits {yk.ui.Control}
  */
-yk.ui.control.HtmlControl.prototype.getOption = function(key, opt_default) {
-    return this.options[key] || opt_default || null;
+yk.ui.control.CustomControl = function(opt_options) {
+    yk.super(this, opt_options);
 };
+yk.inherits(yk.ui.control.CustomControl, yk.ui.Control);
 
 /**
  * @param {Object=} opt_options
@@ -276,19 +309,13 @@ yk.ui.control.HtmlControl.prototype.getOption = function(key, opt_default) {
  */
 yk.ui.control.Textbox = function(opt_options) {
     yk.super(this, opt_options);
-
-    /**
-     * @type {$}
-     * @private
-     */
-    this.$input_;
 };
 yk.inherits(yk.ui.control.Textbox, yk.ui.control.HtmlControl);
 
 /** @override */
 yk.ui.control.Textbox.prototype.createDom = function() {
-    this.$input_ = $('<input type="text">').prop(this.options);
-    this.$el_ = $('<span class="control-textbox">').append(this.$input_);
+    this.$input = $('<input type="text">').prop(this.options);
+    this.$el_ = $('<span class="control-textbox">').append(this.$input);
 };
 
 /**
@@ -298,9 +325,9 @@ yk.ui.control.Textbox.prototype.createDom = function() {
  */
 yk.ui.control.Textbox.prototype.value = function(opt_value) {
     if (opt_value === undefined) {
-        return this.$input_.val();
+        return this.$input.val();
     }
-    this.$input_.val(opt_value);
+    this.$input.val(opt_value);
     return opt_value;
 };
 
@@ -321,14 +348,9 @@ yk.ui.control.Checkbox = function(opt_options, opt_label) {
 
     /**
      * @type {string=} opt_label
-     */
-    this.label_ = opt_label || null;
-
-    /**
-     * @type {$}
      * @private
      */
-    this.$input_;
+    this.label_ = opt_label || null;
 
     /**
      * @type {boolean}
@@ -340,13 +362,13 @@ yk.inherits(yk.ui.control.Checkbox, yk.ui.control.HtmlControl);
 
 /** @override */
 yk.ui.control.Checkbox.prototype.createDom = function() {
-    this.$input_ = $('<input type="checkbox">').prop(this.options);
-    this.$el_ = $('<span class="control-checkbox">').append(this.$input_);
+    this.$input = $('<input type="checkbox">').prop(this.options);
+    this.$el_ = $('<span class="control-checkbox">').append(this.$input);
     if (this.label_) {
-        if (!this.$input_.prop('id')) {
-            this.$input_.prop('id', this.hashcode());
+        if (!this.$input.prop('id')) {
+            this.$input.prop('id', this.hashcode());
         }
-        this.$el_.append($('<label>').prop('for', this.$input_.prop('id')).text(this.label_));
+        this.$el_.append($('<label>').prop('for', this.$input.prop('id')).text(this.label_));
     }
 
     var self = this;
@@ -355,17 +377,12 @@ yk.ui.control.Checkbox.prototype.createDom = function() {
     });
     this.listen('change', function(evt) {
         self.handleChange_(evt);
-        this.$input_.prop('checked', this.checked_);
+        this.$input.prop('checked', this.checked_);
     });
 };
 
 yk.ui.control.Checkbox.prototype.handleChange_ = function(evt) {
     this.checked_ = !this.checked_;
-};
-
-/** @override */
-yk.ui.control.Checkbox.prototype.value = function() {
-    return this.$input_.val();
 };
 
 /**
@@ -398,12 +415,6 @@ yk.ui.control.RadioButton = function(group, opt_options, opt_label) {
     this.label_ = opt_label || null;
 
     /**
-     * @type {$}
-     * @private
-     */
-    this.$input_;
-
-    /**
      * @type {boolean}
      * @private
      */
@@ -413,16 +424,16 @@ yk.inherits(yk.ui.control.RadioButton , yk.ui.control.HtmlControl);
 
 /** @override */
 yk.ui.control.RadioButton.prototype.createDom = function() {
-    this.$input_ = $('<input type="radio">').prop(this.options);
-    this.$el_ = $('<span class="control-radio">').append(this.$input_);
+    this.$input = $('<input type="radio">').prop(this.options);
+    this.$el_ = $('<span class="control-radio">').append(this.$input);
     if (Boolean(this.group_.getOption('alignVertical'))) {
         this.$el_ = $('<div>').append(this.$el_);
     }
     if (this.label_) {
-        if (!this.$input_.prop('id')) {
-            this.$input_.prop('id', this.hashcode());
+        if (!this.$input.prop('id')) {
+            this.$input.prop('id', this.hashcode());
         }
-        this.$el_.append($('<label>').prop('for', this.$input_.prop('id')).text(this.label_));
+        this.$el_.append($('<label>').prop('for', this.$input.prop('id')).text(this.label_));
     }
 
     this.bind('change', this.handleChange_);
@@ -435,11 +446,6 @@ yk.ui.control.RadioButton.prototype.createDom = function() {
  */
 yk.ui.control.RadioButton.prototype.handleChange_ = function(evt) {
     this.group_.fire('change', this);
-};
-
-/** @override */
-yk.ui.control.RadioButton.prototype.value = function() {
-    return this.$input_.val();
 };
 
 /**
@@ -478,7 +484,7 @@ yk.ui.control.RadioButtons = function(opt_options) {
      */
     this.checked_ = null;
 };
-yk.inherits(yk.ui.control.RadioButtons, yk.ui.control.HtmlControl);
+yk.inherits(yk.ui.control.RadioButtons, yk.ui.control.CustomControl);
 
 /**
  * buttons.add({
@@ -545,6 +551,19 @@ yk.ui.control.RadioButtons.prototype.dispose = function() {
     yk.super(this, 'dispose')
 };
 
+/** @override */
+yk.ui.control.RadioButtons.prototype.disabled = function(opt_disabled) {
+    if (yk.isDef(opt_disabled) && yk.assertBoolean(opt_disabled)) {
+        this.inputs_.forEach(function(radio) {
+            radio.disabled(opt_disabled);
+        });
+        return opt_disabled;
+    }
+    return this.inputs_.every(function(each) {
+        return each.disabled();
+    });
+};
+
 /**
  * @param {Object=} opt_options
  * @constructor
@@ -558,11 +577,7 @@ yk.inherits(yk.ui.control.Hidden, yk.ui.control.HtmlControl);
 /** @override */
 yk.ui.control.Hidden.prototype.createDom = function() {
     this.$el_ = $('<input type="hidden">').prop(this.options);
-};
-
-/** @override */
-yk.ui.control.Hidden.prototype.value = function() {
-    return this.$el_.val();
+    this.$input = this.$el_;
 };
 
 /**
@@ -577,8 +592,8 @@ yk.inherits(yk.ui.control.Button, yk.ui.control.HtmlControl);
 
 /** @override */
 yk.ui.control.Button.prototype.createDom = function() {
-    var $button = $('<input type="button">').prop(this.options);
-    this.$el_ = $('<span class="control-button">').append($button);
+    this.$input = $('<input type="button">').prop(this.options);
+    this.$el_ = $('<span class="control-button">').append(this.$input);
 };
 
 /** @override */

@@ -249,7 +249,7 @@ module('ui.Form', {
 
 test('ui.Form', function() {
     var deferred = new $.Deferred();
-    stub.returns(deferred.resolve({result: "hoge"}).promise());
+    stub.returns(deferred.promise());
 
     var textbox = new yk.ui.control.Textbox({
         name: 'textbox',
@@ -267,4 +267,14 @@ test('ui.Form', function() {
         equal('hoge', data['result']);
     });
     equal('textbox=%E3%81%BB%E3%81%92&hidden=1', stub.getCall(0).args[0].data);
+
+    // submit 後、input要素は disabled 状態になる
+    ok(textbox.disabled());
+    ok(hidden.disabled());
+
+    deferred.resolve({result: "hoge"});
+
+    // 実行後、disabled 状態から復帰する
+    ok(!textbox.disabled());
+    ok(!hidden.disabled());
 });
