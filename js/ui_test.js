@@ -234,3 +234,54 @@ test('ui.control.RadioButton', function() {
     ok(radio.getButtons()[0].checked());
     ok(!radio.getButtons()[1].checked());
 });
+
+module('ui.Form', {
+    setup: function() {
+        $sandbox = $('#sandbox');
+        form = new yk.ui.Form('/path/to/api.json');
+        stub = sinon.stub(jQuery, 'ajax');
+    },
+    teardown: function() {
+        form.dispose();
+        stub.restore();
+    }
+});
+
+test('ui.Form', function() {
+    var deferred = new $.Deferred();
+    stub.returns(deferred.resolve({result: "hoge"}).promise());
+
+    var textbox = new yk.ui.control.Textbox({
+        name: 'textbox',
+        value: 'ほげ'
+    });
+    form.registerInput(textbox);
+
+    var hidden = new yk.ui.control.Hidden({
+        name: 'hidden',
+        value: '1'
+    });
+    form.registerInput(hidden);
+
+    form.submit(function(data) {
+        equal('hoge', data['result']);
+    });
+
+    equal('textbox=%E3%81%BB%E3%81%92&hidden=1', stub.getCall(0).args[0].data);
+});
+
+test('ui.Form.serialize', function() {
+    var params;
+
+    params = [
+        new yk.ui.HttpKeyValue('hoge', 'fuga'),
+        new yk.ui.HttpKeyValue('a', ['1', '2']),
+        new yk.ui.HttpKeyValue('foo', 'bar')
+    ];
+    equal('hoge=fuga&a=1&a=2&foo=bar', yk.ui.Form.serialize(params));
+
+    params = [
+        new yk.ui.HttpKeyValue('ほげ', 'ふが')
+    ];
+    equal('%E3%81%BB%E3%81%92=%E3%81%B5%E3%81%8C', yk.ui.Form.serialize(params));
+});

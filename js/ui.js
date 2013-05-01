@@ -38,6 +38,9 @@ yk.ui.Component.prototype.createDom = function() {
  * @param {!yk.ui.Component} component
  */
 yk.ui.Component.prototype.addChild = function(child) {
+    if (!this.$el_) {
+        this.createDom();
+    }
     child.render(this.$el_);
     this.$el_.append(child);
 };
@@ -197,14 +200,12 @@ yk.ui.DynamicComponent.prototype.createDynamicDom = yk.abstractMethod;
  */
 yk.ui.DynamicComponent.prototype.failure = yk.abstractMethod;
 
-
 /**
- *
- * @param opt_options
+ * @param {Object} opt_options
  * @constructor
  * @inherits {yk.ui.Component}
  */
-yk.ui.control.AbstractControl = function(opt_options) {
+yk.ui.Control = function(opt_options) {
     yk.super(this);
 
     /**
@@ -212,32 +213,66 @@ yk.ui.control.AbstractControl = function(opt_options) {
      * @type {!Object}
      * @protected
      */
-    this.options_ = opt_options || {};
+    this.options = opt_options || {};
 };
-yk.inherits(yk.ui.control.AbstractControl, yk.ui.Component);
+yk.inherits(yk.ui.Control, yk.ui.Component);
 
 /**
  *
  * @param {!string} key
  * @param {*} value
  */
-yk.ui.control.AbstractControl.prototype.setOption = function(key, value) {
-    this.options_[key] = value;
-}
+yk.ui.Control.prototype.setOption = function(key, value) {
+    this.options[key] = value;
+};
+
+/**
+ *
+ * @param {!string} key
+ * @return {*}
+ */
+yk.ui.Control.prototype.getOption = function(key) {
+    return this.options[key] || null;
+};
+
+/**
+ * @type {?string|Array.<string>}
+ */
+yk.ui.Control.prototype.value = yk.abstractFuntion;
+
+/**
+ * @return {yk.ui.HttpKeyValue}
+ */
+yk.ui.Control.prototype.toHttpKeyValue = function() {
+    return new yk.ui.HttpKeyValue(this.getOption('name'), this.value());
+};
+
+
+/**
+ *
+ * @param {Object} opt_options
+ * @constructor
+ * @inherits {yk.ui.Control}
+ */
+yk.ui.control.HtmlControl = function(opt_options) {
+    yk.super(this, opt_options);
+};
+yk.inherits(yk.ui.control.HtmlControl, yk.ui.Control);
+
 
 /**
  * @param key
  * @param {*=} opt_default
  * @return {*}
  */
-yk.ui.control.AbstractControl.prototype.getOption = function(key, opt_default) {
-    return this.options_[key] || opt_default || null;
+yk.ui.control.HtmlControl.prototype.getOption = function(key, opt_default) {
+    return this.options[key] || opt_default || null;
 };
 
 /**
  * @param {Object=} opt_options
  * @constructor
- * @inherits {yk.ui.control.AbstractControl}
+ * @inherits {yk.ui.control.HtmlControl}
  */
 yk.ui.control.Textbox = function(opt_options) {
     yk.super(this, opt_options);
@@ -248,17 +283,18 @@ yk.ui.control.Textbox = function(opt_options) {
      */
     this.$input_;
 };
-yk.inherits(yk.ui.control.Textbox, yk.ui.control.AbstractControl);
+yk.inherits(yk.ui.control.Textbox, yk.ui.control.HtmlControl);
 
 /** @override */
 yk.ui.control.Textbox.prototype.createDom = function() {
-    this.$input_ = $('<input type="text">').prop(this.options_);
+    this.$input_ = $('<input type="text">').prop(this.options);
     this.$el_ = $('<span class="control-textbox">').append(this.$input_);
 };
 
 /**
  * @param {string=} opt_value
  * @return {string}
+ * @override
  */
 yk.ui.control.Textbox.prototype.value = function(opt_value) {
     if (opt_value === undefined) {
@@ -278,7 +314,7 @@ yk.ui.control.Textbox.prototype.value = function(opt_value) {
  * @param {Object=} opt_options
  * @param {string=} opt_label
  * @constructor
- * @inherits {yk.ui.control.AbstractControl}
+ * @inherits {yk.ui.control.HtmlControl}
  */
 yk.ui.control.Checkbox = function(opt_options, opt_label) {
     yk.super(this, opt_options);
@@ -298,13 +334,13 @@ yk.ui.control.Checkbox = function(opt_options, opt_label) {
      * @type {boolean}
      * @private
      */
-    this.checked_ = Boolean(this.options_['checked']);
+    this.checked_ = Boolean(this.options['checked']);
 };
-yk.inherits(yk.ui.control.Checkbox, yk.ui.control.AbstractControl);
+yk.inherits(yk.ui.control.Checkbox, yk.ui.control.HtmlControl);
 
 /** @override */
 yk.ui.control.Checkbox.prototype.createDom = function() {
-    this.$input_ = $('<input type="checkbox">').prop(this.options_);
+    this.$input_ = $('<input type="checkbox">').prop(this.options);
     this.$el_ = $('<span class="control-checkbox">').append(this.$input_);
     if (this.label_) {
         if (!this.$input_.prop('id')) {
@@ -327,9 +363,7 @@ yk.ui.control.Checkbox.prototype.handleChange_ = function(evt) {
     this.checked_ = !this.checked_;
 };
 
-/**
- * @return {string}
- */
+/** @override */
 yk.ui.control.Checkbox.prototype.value = function() {
     return this.$input_.val();
 };
@@ -347,7 +381,7 @@ yk.ui.control.Checkbox.prototype.checked = function() {
  * @param {Object=} opt_options
  * @param {string=} opt_label
  * @constructor
- * @inherits {yk.ui.control.AbstractControl}
+ * @inherits {yk.ui.control.HtmlControl}
  */
 yk.ui.control.RadioButton = function(group, opt_options, opt_label) {
     yk.super(this, opt_options);
@@ -375,11 +409,11 @@ yk.ui.control.RadioButton = function(group, opt_options, opt_label) {
      */
     this.checked_ = group.getOption('default') === this.getOption('value');
 };
-yk.inherits(yk.ui.control.RadioButton , yk.ui.control.AbstractControl);
+yk.inherits(yk.ui.control.RadioButton , yk.ui.control.HtmlControl);
 
 /** @override */
 yk.ui.control.RadioButton.prototype.createDom = function() {
-    this.$input_ = $('<input type="radio">').prop(this.options_);
+    this.$input_ = $('<input type="radio">').prop(this.options);
     this.$el_ = $('<span class="control-radio">').append(this.$input_);
     if (Boolean(this.group_.getOption('alignVertical'))) {
         this.$el_ = $('<div>').append(this.$el_);
@@ -403,9 +437,7 @@ yk.ui.control.RadioButton.prototype.handleChange_ = function(evt) {
     this.group_.fire('change', this);
 };
 
-/**
- * @return {string}
- */
+/** @override */
 yk.ui.control.RadioButton.prototype.value = function() {
     return this.$input_.val();
 };
@@ -429,7 +461,7 @@ yk.ui.control.RadioButton.prototype.checked = function(opt_checked) {
  * });
  * @param {Object=} opt_options
  * @constructor
- * @inherits {yk.ui.Control.AbstractControl}
+ * @inherits {yk.ui.control.HtmlControl}
  */
 yk.ui.control.RadioButtons = function(opt_options) {
     yk.super(this, opt_options);
@@ -446,8 +478,7 @@ yk.ui.control.RadioButtons = function(opt_options) {
      */
     this.checked_ = null;
 };
-yk.inherits(yk.ui.control.RadioButtons, yk.ui.control.AbstractControl);
-
+yk.inherits(yk.ui.control.RadioButtons, yk.ui.control.HtmlControl);
 
 /**
  * buttons.add({
@@ -491,6 +522,14 @@ yk.ui.control.RadioButtons.prototype.createDom = function() {
     });
 };
 
+/** @override */
+yk.ui.control.RadioButtons.prototype.value = function() {
+    if (!this.checked) {
+        return null;
+    }
+    return this.checked_.value();
+};
+
 /**
  * @return {?yk.ui.control.RadioButton}
  */
@@ -509,17 +548,42 @@ yk.ui.control.RadioButtons.prototype.dispose = function() {
 /**
  * @param {Object=} opt_options
  * @constructor
- * @inherits {yk.ui.control.AbstractControl}
+ * @inherits {yk.ui.control.HtmlControl}
+ */
+yk.ui.control.Hidden = function(opt_options) {
+    yk.super(this, opt_options);
+};
+yk.inherits(yk.ui.control.Hidden, yk.ui.control.HtmlControl);
+
+/** @override */
+yk.ui.control.Hidden.prototype.createDom = function() {
+    this.$el_ = $('<input type="hidden">').prop(this.options);
+};
+
+/** @override */
+yk.ui.control.Hidden.prototype.value = function() {
+    return this.$el_.val();
+};
+
+/**
+ * @param {Object=} opt_options
+ * @constructor
+ * @inherits {yk.ui.control.HtmlControl}
  */
 yk.ui.control.Button = function(opt_options) {
     yk.super(this, opt_options);
 };
-yk.inherits(yk.ui.control.Button, yk.ui.control.AbstractControl);
+yk.inherits(yk.ui.control.Button, yk.ui.control.HtmlControl);
 
 /** @override */
 yk.ui.control.Button.prototype.createDom = function() {
-    var $button= $('<input type="button">').prop(this.options_);
+    var $button = $('<input type="button">').prop(this.options);
     this.$el_ = $('<span class="control-button">').append($button);
+};
+
+/** @override */
+yk.ui.control.Button.prototype.value = function() {
+    throw Error('yk.ui.control.Button has not value.');
 };
 
 /**
@@ -575,7 +639,7 @@ yk.ui.layout.Table.Row = function(opt_cells, opt_tag) {
      * @protected
      */
     this.cells_ = (opt_cells || []).map(function(each) {
-        return new yk.ui.layout.Table.Cell(each)
+        return new yk.ui.layout.Table.Cell(each);
     });
 
     /**
@@ -622,10 +686,184 @@ yk.inherits(yk.ui.layout.Table.Cell, yk.ui.Component);
 
 /** @override */
 yk.ui.layout.Table.Cell.prototype.createDom = function() {
-    this.$el_ = $('<td class="layout-table-cell">')
+    this.$el_ = $('<td class="layout-table-cell">');
     if (this.inner_ instanceof yk.ui.Component) {
-        this.addChild(this.inner_)
+        this.addChild(this.inner_);
     } else {
         this.$el_.text(this.inner_);
     }
+};
+
+/**
+ *
+ * @param {string} key
+ * @param {string?|Array.<string>} value
+ * @constructor
+ * @inherits {yk.util.Pair}
+ */
+yk.ui.HttpKeyValue = function(key, value) {
+
+    /**
+     * @type {boolean}
+     * @private
+     */
+    this.isMultipleValue_ = yk.isArray(value);
+
+    yk.super(this, yk.assertString(key), this.assertValue_(value));
+};
+yk.inherits(yk.ui.HttpKeyValue, yk.util.Pair);
+
+/**
+ * @return {string}
+ */
+yk.ui.HttpKeyValue.prototype.getKey = function() {
+    return yk.assertString(this.getFirst());
+};
+
+/**
+ * @return {string?|Array.<string>}
+ */
+yk.ui.HttpKeyValue.prototype.getValue = function() {
+    return this.getSecond();
+};
+
+/**
+ * @param {string?|Array.<string>} value
+ * @private
+ */
+yk.ui.HttpKeyValue.prototype.assertValue_ = function(value) {
+    if (this.isMultipleValue_) {
+        yk.assertArray(value).forEach(function(each) {
+            yk.assertString(each);
+        });
+        return value;
+    }
+    return yk.assertString(value);
+};
+
+/**
+ * @return {string}
+ */
+yk.ui.HttpKeyValue.prototype.format = function() {
+    var key = encodeURIComponent(this.getKey());
+    var value = this.isMultipleValue_ ? this.getValue() : [this.getValue()];
+    return value.map(function(v) {
+        return key + "=" + encodeURIComponent(v);
+    }, this).join('&');
+};
+
+/**
+ *
+ * @param {string} action
+ * @param {Object=} opt_options
+ * @constructor
+ * @inherits {yk.ui.Component}
+ */
+yk.ui.Form = function(uri, opt_options) {
+
+    /**
+     * @type {string}
+     * @private
+     */
+    this.uri_ = uri;
+
+    /**
+     * @type {!Object}
+     * @private
+     */
+    this.options_ = opt_options || {};
+
+    /**
+     * @type {Array.<yk.ui.Control>}
+     * @private
+     */
+    this.inputs_ = [];
+};
+yk.inherits(yk.ui.Form, yk.ui.Component);
+
+/** @override */
+yk.ui.Form.prototype.createDom = function() {
+    this.$el_ = $('<div>').prop(this.options_);
+};
+
+/**
+ * @param {function} callback
+ * @param {function=} opt_errback
+ * @param {boolean=} opt_safe
+ */
+yk.ui.Form.prototype.submit = function(callback, opt_errback, opt_safe) {
+    if (!this.$el_) {
+        this.createDom();
+    }
+    var unlock = yk.nullFunction;
+    if (!yk.isDef(opt_safe) || opt_safe) {
+        unlock = this.lock_();
+    }
+    var data = yk.ui.Form.serialize(this.inputs_.map(function(each) {
+        return each.toHttpKeyValue();
+    }));
+    this.submitInternal_(data, callback, opt_errback).always(unlock);
+};
+
+/**
+ * @param {string} data
+ * @param {function} callback
+ * @param {function=} opt_errback
+ * @private
+ */
+yk.ui.Form.prototype.submitInternal_ = function(data, callback, opt_errback) {
+    return $.ajax({
+        url: this.url_,
+        data: data,
+        dataType: 'json'
+    }).done(function(data) {
+        callback(data);
+    }).fail(function(xhr) {
+        if (opt_errback) {
+            opt_errback(xhr);
+        }
+    });
+};
+
+/**
+ * @param {yk.ui.Control} control
+ * @param {boolean} opt_append
+ */
+yk.ui.Form.prototype.registerInput = function(control, opt_append) {
+    this.inputs_.push(control);
+    if (!yk.isDef(opt_append) || opt_append) {
+        this.addChild(control);
+    }
+};
+
+/**
+ *
+ * @param {Array.<yk.ui.HttpKeyValue>} params
+ * @return {string}
+ */
+yk.ui.Form.serialize = function(params) {
+    return (params || []).map(function(each) {
+        return yk.assertInstanceof(each, yk.ui.HttpKeyValue).format();
+    }).join('&');
+};
+
+/**
+ * @param {number} opt_timeout
+ * @return {function}
+ * @private
+ */
+yk.ui.Form.prototype.lock_ = function(opt_timeout) {
+    var locked = [];
+    $('input', this.$el_).each(function(index, input) {
+        var $input = $(input);
+        if(!$input.prop('disabled')) {
+            $input.prop('disabled', true);
+            locked.push($input);
+        }
+   });
+   return function() {
+        locked.forEach(function($input) {
+            $input.prop('disabled', false);
+        });
+   };
 };
