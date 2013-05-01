@@ -3,6 +3,12 @@
  */
 var yk = yk || {};
 
+/**
+ * @type {boolean}
+ * @const
+ */
+yk.DEBUG = true;
+
 yk.global = this;
 
 /**
@@ -154,7 +160,7 @@ yk.assertDefAndNotNull = function(value) {
  */
 yk.assertString = function(value) {
     if (yk.DEBUG && typeof value !== "string") {
-        throw TypeError(name + ' must be string');
+        throw TypeError('must be string');
     }
     return /** @type {string} */(value);
 };
@@ -165,7 +171,7 @@ yk.assertString = function(value) {
  */
 yk.assertNumber = function(value) {
     if (yk.DEBUG && typeof value !== "number") {
-        throw TypeError(name + ' must be number');
+        throw TypeError('must be number');
     }
     return /** @type {number} */(value);
 };
@@ -176,7 +182,7 @@ yk.assertNumber = function(value) {
  */
 yk.assertBoolean = function(value) {
     if (yk.DEBUG && typeof value !== "boolean") {
-        throw TypeError(name + ' must be boolean');
+        throw TypeError('must be boolean');
     }
     return /** @type {boolean} */(value);
 };
@@ -190,4 +196,17 @@ yk.assertArray = function(value) {
         throw TypeError('must be array');
     }
     return /** @type {Array.<*>} */(value);
+};
+
+/**
+ * @param {T} value
+ * @param {function} clazz
+ * @return {T}
+ * @template T
+ */
+yk.assertInstanceof = function(value, clazz) {
+    if (yk.DEBUG && !(value instanceof clazz)) {
+        throw TypeError('must be ' + clazz);
+    }
+    return /** @type {T} */(value);
 };
