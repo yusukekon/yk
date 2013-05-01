@@ -266,22 +266,5 @@ test('ui.Form', function() {
     form.submit(function(data) {
         equal('hoge', data['result']);
     });
-
     equal('textbox=%E3%81%BB%E3%81%92&hidden=1', stub.getCall(0).args[0].data);
-});
-
-test('ui.Form.serialize', function() {
-    var params;
-
-    params = [
-        new yk.ui.HttpKeyValue('hoge', 'fuga'),
-        new yk.ui.HttpKeyValue('a', ['1', '2']),
-        new yk.ui.HttpKeyValue('foo', 'bar')
-    ];
-    equal('hoge=fuga&a=1&a=2&foo=bar', yk.ui.Form.serialize(params));
-
-    params = [
-        new yk.ui.HttpKeyValue('ほげ', 'ふが')
-    ];
-    equal('%E3%81%BB%E3%81%92=%E3%81%B5%E3%81%8C', yk.ui.Form.serialize(params));
 });

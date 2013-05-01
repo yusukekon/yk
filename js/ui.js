@@ -241,10 +241,10 @@ yk.ui.Control.prototype.getOption = function(key) {
 yk.ui.Control.prototype.value = yk.abstractFuntion;
 
 /**
- * @return {yk.ui.HttpKeyValue}
+ * @return {yk.net.HttpKeyValue}
  */
 yk.ui.Control.prototype.toHttpKeyValue = function() {
-    return new yk.ui.HttpKeyValue(this.getOption('name'), this.value());
+    return new yk.net.HttpKeyValue(this.getOption('name'), this.value());
 };
 
 
@@ -696,64 +696,6 @@ yk.ui.layout.Table.Cell.prototype.createDom = function() {
 
 /**
  *
- * @param {string} key
- * @param {string?|Array.<string>} value
- * @constructor
- * @inherits {yk.util.Pair}
- */
-yk.ui.HttpKeyValue = function(key, value) {
-
-    /**
-     * @type {boolean}
-     * @private
-     */
-    this.isMultipleValue_ = yk.isArray(value);
-
-    yk.super(this, yk.assertString(key), this.assertValue_(value));
-};
-yk.inherits(yk.ui.HttpKeyValue, yk.util.Pair);
-
-/**
- * @return {string}
- */
-yk.ui.HttpKeyValue.prototype.getKey = function() {
-    return yk.assertString(this.getFirst());
-};
-
-/**
- * @return {string?|Array.<string>}
- */
-yk.ui.HttpKeyValue.prototype.getValue = function() {
-    return this.getSecond();
-};
-
-/**
- * @param {string?|Array.<string>} value
- * @private
- */
-yk.ui.HttpKeyValue.prototype.assertValue_ = function(value) {
-    if (this.isMultipleValue_) {
-        yk.assertArray(value).forEach(function(each) {
-            yk.assertString(each);
-        });
-        return value;
-    }
-    return yk.assertString(value);
-};
-
-/**
- * @return {string}
- */
-yk.ui.HttpKeyValue.prototype.format = function() {
-    var key = encodeURIComponent(this.getKey());
-    var value = this.isMultipleValue_ ? this.getValue() : [this.getValue()];
-    return value.map(function(v) {
-        return key + "=" + encodeURIComponent(v);
-    }, this).join('&');
-};
-
-/**
- *
  * @param {string} action
  * @param {Object=} opt_options
  * @constructor
@@ -799,7 +741,7 @@ yk.ui.Form.prototype.submit = function(callback, opt_errback, opt_safe) {
     if (!yk.isDef(opt_safe) || opt_safe) {
         unlock = this.lock_();
     }
-    var data = yk.ui.Form.serialize(this.inputs_.map(function(each) {
+    var data = yk.net.serialize(this.inputs_.map(function(each) {
         return each.toHttpKeyValue();
     }));
     this.submitInternal_(data, callback, opt_errback).always(unlock);
@@ -834,17 +776,6 @@ yk.ui.Form.prototype.registerInput = function(control, opt_append) {
     if (!yk.isDef(opt_append) || opt_append) {
         this.addChild(control);
     }
-};
-
-/**
- *
- * @param {Array.<yk.ui.HttpKeyValue>} params
- * @return {string}
- */
-yk.ui.Form.serialize = function(params) {
-    return (params || []).map(function(each) {
-        return yk.assertInstanceof(each, yk.ui.HttpKeyValue).format();
-    }).join('&');
 };
 
 /**
