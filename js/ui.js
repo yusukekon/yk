@@ -28,6 +28,13 @@ yk.ui.Component = function() {
 yk.inherits(yk.ui.Component, yk.Object);
 
 /**
+ * @return {boolean}
+ */
+yk.ui.Component.prototype.rendered = function() {
+    return yk.isDef(this.$el_) && this.$el_.parent().length > 0;
+};
+
+/**
  * @protected
  */
 yk.ui.Component.prototype.createDom = function() {
@@ -601,6 +608,113 @@ yk.ui.control.Button.prototype.createDom = function() {
 /** @override */
 yk.ui.control.Button.prototype.value = function() {
     throw Error('yk.ui.control.Button has not value.');
+};
+
+/**
+ * @param {$|Element|string} opt_parent
+ * @constructor
+ * @inherits {yk.ui.Component}
+ */
+yk.ui.Dialog = function(opt_parent) {
+    yk.super(this);
+
+    /**
+     * @type {$}
+     * @private
+     */
+    this.$parent_ = $(opt_parent || yk.document);
+};
+yk.inherits(yk.ui.Dialog, yk.ui.Component);
+
+/**
+ * @type {string}
+ * @const
+ */
+yk.ui.Dialog.MODAL_CLASS = 'dialog-modal';
+
+/** @override */
+yk.ui.Dialog.prototype.createDom = function() {
+    yk.ui.Component.prototype.createDom.call(this);
+    this.$el_.css('position', 'absolute');
+};
+
+/**
+ *
+ */
+yk.ui.Dialog.prototype.show = function() {
+    if (!this.$el_) {
+        this.createDom();
+    }
+    this.showInternal();
+    // 可視状態になったら、ダイアログ要素をセンターに配置
+    this.reposition_();
+    if (!this.rendered()) {
+        this.render(this.$parent_);
+    }
+};
+
+/**
+ *
+ */
+yk.ui.Dialog.prototype.hide = function() {
+    if (this.$el_) {
+        this.hideInternal();
+    }
+};
+
+/**
+ * @protected
+ */
+yk.ui.Dialog.prototype.showInternal = function() {
+    this.modal_(true);
+    var self = this;
+    $(yk.document).bind('click', function(evt) {
+        self.hide();
+    });
+    this.$el_.fadeIn();
+};
+
+/**
+ * @protected
+ */
+yk.ui.Dialog.prototype.hideInternal = function() {
+    this.$el_.fadeOut();
+    $(yk.document).unbind('click');
+    this.modal_(false);
+};
+
+/**
+ *
+ * @param {boolean} on
+ * @private
+ */
+yk.ui.Dialog.prototype.modal_ = function(on) {
+    if (yk.assertBoolean(on)) {
+        this.$parent_.addClass(yk.ui.Dialog.MODAL_CLASS);
+    } else {
+        this.$parent_.removeClass(yk.ui.Dialog.MODAL_CLASS);
+    }
+};
+
+/**
+ * @private
+ */
+yk.ui.Dialog.prototype.reposition_ = function() {
+    var winHeight = $(yk.document).height();
+    var winWidth = $(yk.document).width();
+    var elHeight = this.$el_.height();
+    var elWidth = this.$el_.width();
+
+    this.$el_.offset({
+        top: Math.max(winHeight / 2 - elHeight/ 2, 0),
+        left: Math.max(winWidth / 2 - elWidth / 2, 0)
+    });
+};
+
+/** @override */
+yk.ui.Dialog.prototype.dispose = function() {
+    yk.ui.Component.prototype.dispose.call(this);
+    $(yk.document).unbind('click');
 };
 
 /**

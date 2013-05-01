@@ -235,6 +235,38 @@ test('ui.control.RadioButton', function() {
     ok(!radio.getButtons()[1].checked());
 });
 
+module('ui.Dialog', {
+    setup: function() {
+        $sandbox = $('#sandbox');
+        yk.document = $sandbox;
+        function SampleDialog() {
+            yk.super(this, $sandbox);
+
+            this.close_ = new yk.ui.control.Button({
+                value: 'CLOSE'
+            });
+        };
+        yk.inherits(SampleDialog, yk.ui.Dialog);
+
+        SampleDialog.prototype.createDom = function() {
+            this.$el_ = $('<div>');
+            this.addChild(this.close_);
+        };
+
+        dialog = new SampleDialog();
+    },
+    teardown: function() {
+        dialog.dispose();
+        yk.document = yk.global.document;
+    }
+});
+
+test('ui.Dialog', function() {
+    dialog.show();
+
+    ok($sandbox.hasClass(yk.ui.Dialog.MODAL_CLASS));
+});
+
 module('ui.Form', {
     setup: function() {
         $sandbox = $('#sandbox');
