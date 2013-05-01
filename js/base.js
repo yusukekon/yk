@@ -62,6 +62,15 @@ yk.abstractFuntion = function() {
 };
 
 /**
+ *
+ * @param {*} target
+ * @return {boolean}
+ */
+yk.isDef = function(target) {
+    return target !== undefined;
+};
+
+/**
  * @param {!Object} array
  * @param {number=} opt_start
  * @param {number=} opt_end
