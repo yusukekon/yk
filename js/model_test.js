@@ -38,6 +38,18 @@ User.prototype.load = function(json) {
     });
 };
 
+User.prototype.toJSON = function() {
+    return {
+        id: this.id,
+        name: this.name,
+        birthday: this.birthday.format(),
+        groups: this.groups,
+        friends: this.friends.map(function(each) {
+            return each.toJSON();
+        })
+    }
+};
+
 test('Model', function() {
     // 何も渡さなければ、空の Model を生成
     ok(new User());
@@ -59,6 +71,15 @@ test('Model', function() {
     equal(200, user.groups[1]);
     equal(2, user.friends[0].id);
     equal(3, user.friends[1].id);
+
+    var json = user.toJSON();
+    equal(1, json.id);
+    equal('hoge', json.name);
+    equal('1984/08/13', json.birthday);
+    equal(100, json.groups[0]);
+    equal(200, json.groups[1]);
+    equal(2, json.friends[0].id);
+    equal(3, json.friends[1].id);
 });
 
 test('Model error cases', function() {

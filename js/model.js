@@ -50,3 +50,9 @@ yk.Model.prototype.getAsArray = function(json, name, opt_default) {
     return yk.assertArray(value);
 };
 
+/**
+ * @return {Object}
+ */
+yk.Model.prototype.toJSON = function() {
+    return {};
+}
