@@ -284,9 +284,10 @@ yk.ui.control.HtmlControl.prototype.value = function() {
 
 /** @override */
 yk.ui.control.HtmlControl.prototype.disabled = function(opt_disabled) {
-    if (yk.isDef(opt_disabled) && yk.assertBoolean(opt_disabled)) {
-        this.getInput().prop('disabled', opt_disabled);
-        return opt_disabled;
+    if (yk.isDef(opt_disabled)) {
+        var disabled = yk.assertBoolean(opt_disabled);
+        this.getInput().prop('disabled', disabled);
+        return disabled;
     }
     return this.getInput().prop('disabled');
 };
@@ -553,11 +554,12 @@ yk.ui.control.RadioButtons.prototype.dispose = function() {
 
 /** @override */
 yk.ui.control.RadioButtons.prototype.disabled = function(opt_disabled) {
-    if (yk.isDef(opt_disabled) && yk.assertBoolean(opt_disabled)) {
+    if (yk.isDef(opt_disabled)) {
+        var disabled = yk.assertBoolean(opt_disabled);
         this.inputs_.forEach(function(radio) {
-            radio.disabled(opt_disabled);
+            radio.disabled(disabled);
         });
-        return opt_disabled;
+        return disabled;
     }
     return this.inputs_.every(function(each) {
         return each.disabled();
@@ -800,16 +802,16 @@ yk.ui.Form.prototype.registerInput = function(control, opt_append) {
  */
 yk.ui.Form.prototype.lock_ = function(opt_timeout) {
     var locked = [];
-    $('input', this.$el_).each(function(index, input) {
-        var $input = $(input);
-        if(!$input.prop('disabled')) {
-            $input.prop('disabled', true);
-            locked.push($input);
+    this.inputs_.forEach(function(each) {
+        // 元々 disabled な要素には何もしない
+        if (!each.disabled()) {
+            each.disabled(true) ;
+            locked.push(each);
         }
-   });
+    });
    return function() {
-        locked.forEach(function($input) {
-            $input.prop('disabled', false);
+        locked.forEach(function(each) {
+            each.disabled(false) ;
         });
    };
 };

@@ -272,6 +272,7 @@ test('ui.Form', function() {
     ok(textbox.disabled());
     ok(hidden.disabled());
 
+    // レスポンスを受け取る
     deferred.resolve({result: "hoge"});
 
     // 実行後、disabled 状態から復帰する
