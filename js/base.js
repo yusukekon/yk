@@ -11,6 +11,8 @@ yk.DEBUG = true;
 
 yk.global = this;
 
+yk.document = yk.global.document;
+
 /**
  * @param {!Object} childClass
  * @param {!Object} parentClass
@@ -103,7 +105,7 @@ yk.Object = function() {
      * @type {string}
      * @private
      */
-    this.objectId_ ;
+    this.objectId_;
 };
 yk.inherits(yk.Object, Object);
 
@@ -128,7 +130,7 @@ yk.Object.prototype.equals = function(target) {
 
 /**
  * native な配列であれば true を返す
- * @param target
+ * @param {*} target
  * @return {boolean}
  */
 yk.isArray = function(value) {
@@ -144,7 +146,7 @@ yk.isArray = function(value) {
 };
 
 /**
- * @param {*} value
+ * @param {!*} value
  * @return {!*}
  */
 yk.assertDefAndNotNull = function(value) {
@@ -155,7 +157,7 @@ yk.assertDefAndNotNull = function(value) {
 };
 
 /**
- * @param value
+ * @param {string} value
  * @return {string}
  */
 yk.assertString = function(value) {
@@ -166,7 +168,7 @@ yk.assertString = function(value) {
 };
 
 /**
- * @param value
+ * @param {number} value
  * @return {number}
  */
 yk.assertNumber = function(value) {
@@ -177,7 +179,7 @@ yk.assertNumber = function(value) {
 };
 
 /**
- * @param value
+ * @param {boolean} value
  * @return {boolean}
  */
 yk.assertBoolean = function(value) {
