@@ -670,10 +670,10 @@ yk.ui.Dialog.prototype.hide = function() {
  */
 yk.ui.Dialog.prototype.openInternal = function() {
     this.modal_(true);
-    this.reposition_();
     if (!this.$el_.hasClass('modal-dialog')) {
         this.$el_.addClass('modal-dialog');
     }
+    this.reposition_();
     this.$el_.fadeIn();
 };
 

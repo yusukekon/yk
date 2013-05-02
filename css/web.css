@@ -1,20 +1,21 @@
-/* line 4, ../scss/application.scss */
+/* line 4, ../scss/web.scss */
 body {
   color: #333;
   line-height: 1.5;
   background-color: #FFF;
 }
 
-/* line 10, ../scss/application.scss */
+/* line 10, ../scss/web.scss */
 .modal-dialog {
   background-color: #FEFEFE;
   -webkit-box-shadow: black 0 0 25px, rgba(0, 0, 0, 0.2) 0 0 3px 1px inset;
   -moz-box-shadow: black 0 0 25px, rgba(0, 0, 0, 0.2) 0 0 3px 1px inset;
   box-shadow: black 0 0 25px, rgba(0, 0, 0, 0.2) 0 0 3px 1px inset;
   z-index: 10000;
+  position: absolute;
 }
 
-/* line 16, ../scss/application.scss */
+/* line 17, ../scss/web.scss */
 .modal-dialog-bg {
   background-color: #000;
   height: 100%;
