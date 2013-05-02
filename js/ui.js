@@ -76,8 +76,9 @@ yk.ui.Component.prototype.render = function(opt_parentEl, opt_force) {
     if (!this.$el_ || force) {
         this.createDom();
     }
+    this.$el_.fadeIn();
     var parentEl = opt_parentEl || document.body;
-    this.$el_.appendTo(parentEl); 
+    this.$el_.appendTo(parentEl);
 };
 
 /**
@@ -635,7 +636,7 @@ yk.ui.Dialog = function(opt_parent) {
      * @type {$}
      * @private
      */
-    this.$parent_ = $(opt_parent || yk.document);
+    this.$parent_ = $(opt_parent || yk.document.body);
 };
 yk.inherits(yk.ui.Dialog, yk.ui.Component);
 
@@ -645,26 +646,15 @@ yk.inherits(yk.ui.Dialog, yk.ui.Component);
  */
 yk.ui.Dialog.MODAL_CLASS = 'dialog-modal';
 
-/** @override */
-yk.ui.Dialog.prototype.createDom = function() {
-    yk.ui.Component.prototype.createDom.call(this);
-    this.$el_.css('position', 'absolute');
-};
-
 /**
  *
  */
-yk.ui.Dialog.prototype.show = function() {
-    if (!this.$el_) {
-        this.createDom();
-    }
-    this.showInternal();
-    // 可視状態になったら、ダイアログ要素をセンターに配置
-    this.reposition_();
+yk.ui.Dialog.prototype.open = function() {
     if (!this.rendered()) {
         this.render(this.$parent_);
     }
-};
+    this.openInternal();
+ };
 
 /**
  *
@@ -678,12 +668,9 @@ yk.ui.Dialog.prototype.hide = function() {
 /**
  * @protected
  */
-yk.ui.Dialog.prototype.showInternal = function() {
+yk.ui.Dialog.prototype.openInternal = function() {
     this.modal_(true);
-    var self = this;
-    $(yk.document).bind('click', function(evt) {
-        self.hide();
-    });
+    this.reposition_();
     this.$el_.fadeIn();
 };
 
@@ -692,7 +679,6 @@ yk.ui.Dialog.prototype.showInternal = function() {
  */
 yk.ui.Dialog.prototype.hideInternal = function() {
     this.$el_.fadeOut();
-    $(yk.document).unbind('click');
     this.modal_(false);
 };
 
@@ -713,21 +699,35 @@ yk.ui.Dialog.prototype.modal_ = function(on) {
  * @private
  */
 yk.ui.Dialog.prototype.reposition_ = function() {
+    // position は absolute で調整
+    if (this.$el_.css('position') !== 'absolute') {
+        this.$el_.css('position', 'absolute');
+    }
+
     var winHeight = $(yk.document).height();
     var winWidth = $(yk.document).width();
     var elHeight = this.$el_.height();
     var elWidth = this.$el_.width();
 
-    this.$el_.offset({
-        top: Math.max(winHeight / 2 - elHeight/ 2, 0),
+    this.$el_.css({
+        top: Math.max(winHeight / 2 - elHeight / 2, 0),
         left: Math.max(winWidth / 2 - elWidth / 2, 0)
     });
 };
 
-/** @override */
-yk.ui.Dialog.prototype.dispose = function() {
-    yk.ui.Component.prototype.dispose.call(this);
-    $(yk.document).unbind('click');
+/**
+ * @param {Object=} opt_options
+ * @return {yk.ui.control.Button}
+ * @protected
+ */
+yk.ui.Dialog.prototype.createDefaultCancelButton = function() {
+    var cancel = new yk.ui.control.Button({
+        value: 'cancel'
+    });
+    cancel.bind('click', function(evt) {
+        this.hide();
+    }, this);
+    return cancel;
 };
 
 /**
@@ -849,6 +849,7 @@ yk.ui.layout.Table.Cell.prototype.createDom = function() {
  * @inherits {yk.ui.Component}
  */
 yk.ui.Form = function(uri, opt_options) {
+    yk.super(this);
 
     /**
      * @type {string}

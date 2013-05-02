@@ -262,7 +262,7 @@ module('ui.Dialog', {
 });
 
 test('ui.Dialog', function() {
-    dialog.show();
+    dialog.open();
 
     ok($sandbox.hasClass(yk.ui.Dialog.MODAL_CLASS));
 });
