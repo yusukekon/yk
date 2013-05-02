@@ -644,7 +644,7 @@ yk.inherits(yk.ui.Dialog, yk.ui.Component);
  * @type {string}
  * @const
  */
-yk.ui.Dialog.MODAL_CLASS = 'dialog-modal';
+yk.ui.Dialog.MODAL_BG_CLASS = 'modal-dialog-bg';
 
 /**
  *
@@ -671,6 +671,9 @@ yk.ui.Dialog.prototype.hide = function() {
 yk.ui.Dialog.prototype.openInternal = function() {
     this.modal_(true);
     this.reposition_();
+    if (!this.$el_.hasClass('modal-dialog')) {
+        this.$el_.addClass('modal-dialog');
+    }
     this.$el_.fadeIn();
 };
 
@@ -689,9 +692,9 @@ yk.ui.Dialog.prototype.hideInternal = function() {
  */
 yk.ui.Dialog.prototype.modal_ = function(on) {
     if (yk.assertBoolean(on)) {
-        this.$parent_.addClass(yk.ui.Dialog.MODAL_CLASS);
+        $('<div id="modal-dialog-bg">').addClass(yk.ui.Dialog.MODAL_BG_CLASS).appendTo(yk.document.body);
     } else {
-        this.$parent_.removeClass(yk.ui.Dialog.MODAL_CLASS);
+        $('#modal-dialog-bg').remove();
     }
 };
 
