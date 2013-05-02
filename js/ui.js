@@ -15,9 +15,15 @@ yk.ui.Component = function() {
 
     /**
      * @type {$}
-     * @private
+     * @protected
      */
     this.$el_;
+
+    /**
+     * @type {Array.<yk.ui.Component>}
+     * @protected
+     */
+    this.children_ = [];
 
     /**
      * @type {!Object.<string, Array.<function>>}
@@ -50,6 +56,7 @@ yk.ui.Component.prototype.addChild = function(child) {
     }
     child.render(this.$el_);
     this.$el_.append(child);
+    this.children_.push(child);
 };
 
 /**
@@ -80,6 +87,12 @@ yk.ui.Component.prototype.dispose = function() {
     if (this.$el_) {
         this.$el_.remove();
         this.$el_ = null;
+    }
+    if (this.children_) {
+        this.children_.forEach(function(child) {
+            child.dispose();
+        });
+        this.children_ = null;
     }
     this.handlers_ = null;
 };
@@ -787,6 +800,9 @@ yk.inherits(yk.ui.layout.Table.Row, yk.ui.Component);
  */
 yk.ui.layout.Table.Row.prototype.append = function(cell) {
     this.cells_.push(new yk.ui.layout.Table.Cell(cell));
+    if (this.rendered()) {
+        this.addChild(cell);
+    }
 };
 
 /** @override */
