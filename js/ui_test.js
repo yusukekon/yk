@@ -264,7 +264,7 @@ module('ui.Dialog', {
 test('ui.Dialog', function() {
     dialog.open();
 
-    ok($sandbox.hasClass(yk.ui.Dialog.MODAL_CLASS));
+    ok($('.modal-dialog', $sandbox).length > 0);
 });
 
 module('ui.Form', {
@@ -287,13 +287,13 @@ test('ui.Form', function() {
         name: 'textbox',
         value: 'ほげ'
     });
-    form.registerInput(textbox);
+    form.registerInput(textbox, true);
 
     var hidden = new yk.ui.control.Hidden({
         name: 'hidden',
         value: '1'
     });
-    form.registerInput(hidden);
+    form.registerInput(hidden, true);
 
     form.submit(function(data) {
         equal('hoge', data['result']);

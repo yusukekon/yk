@@ -585,14 +585,6 @@ yk.ui.control.RadioButtons.prototype.checked = function() {
 };
 
 /** @override */
-yk.ui.control.RadioButtons.prototype.dispose = function() {
-    this.inputs_.forEach(function(radio) {
-        radio.dispose();
-    });
-    yk.super(this, 'dispose')
-};
-
-/** @override */
 yk.ui.control.RadioButtons.prototype.disabled = function(opt_disabled) {
     if (yk.isDef(opt_disabled)) {
         var disabled = yk.assertBoolean(opt_disabled);
@@ -667,8 +659,8 @@ yk.ui.Dialog.MODAL_BG_CLASS = 'modal-dialog-bg';
 
 /** @override */
 yk.ui.Dialog.prototype.dispose = function() {
-    yk.super(this, 'dispose');
     this.hide();
+    yk.super(this, 'dispose');
 };
 
 /**
