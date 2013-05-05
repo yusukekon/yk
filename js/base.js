@@ -41,7 +41,23 @@ yk.super = function(self, opt_name, var_args) {
     if (!opt_name) {
         throw Error('name must be not null');
     }
-    return self.constructor.__super__[opt_name].apply(self, yk.slice(arguments, 2));
+
+    var found = false;
+    for (var parent = self.constructor; parent;
+         parent = parent.__super__ && parent.__super__.constructor) {
+
+        if (parent.prototype[opt_name] === caller) {
+            found = true;
+        } else if (found) {
+            return parent.prototype[opt_name].apply(self, yk.slice(arguments, 2));
+        }
+    }
+
+    if (self[opt_name] === caller) {
+        return self.constructor.prototype[opt_name].apply(self, yk.slice(arguments, 2));
+    }
+
+    throw Error('base method not found.');
 };
 
 /**
