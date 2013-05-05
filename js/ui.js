@@ -30,6 +30,12 @@ yk.ui.Component = function() {
      * @private
      */
     this.handlers_ = {};
+
+    /**
+     * @type {Array.<yk.ui.Component>}
+     * @private
+     */
+    this.disposables_ = [];
 };
 yk.inherits(yk.ui.Component, yk.Object);
 
@@ -82,6 +88,13 @@ yk.ui.Component.prototype.render = function(opt_parentEl, opt_force) {
 };
 
 /**
+ * @param {yk.ui.Component} target
+ */
+yk.ui.Component.prototype.registerDisposable = function(target) {
+    this.disposables_.push(target);
+};
+
+/**
  *
  */
 yk.ui.Component.prototype.dispose = function() {
@@ -94,6 +107,12 @@ yk.ui.Component.prototype.dispose = function() {
             child.dispose();
         });
         this.children_ = null;
+    }
+    if (this.disposables_) {
+        this.disposables_.forEach(function(each) {
+            each.dispose();
+        });
+        this.disposables_ = null;
     }
     this.handlers_ = null;
 };
@@ -646,6 +665,12 @@ yk.inherits(yk.ui.Dialog, yk.ui.Component);
  */
 yk.ui.Dialog.MODAL_BG_CLASS = 'modal-dialog-bg';
 
+/** @override */
+yk.ui.Dialog.prototype.dispose = function() {
+    yk.super(this, 'dispose');
+    this.hide();
+};
+
 /**
  *
  */
@@ -653,7 +678,12 @@ yk.ui.Dialog.prototype.open = function() {
     if (!this.rendered()) {
         this.render(this.$parent_);
     }
-    this.openInternal();
+    this.modal_(true);
+    if (!this.$el_.hasClass('modal-dialog')) {
+        this.$el_.addClass('modal-dialog');
+    }
+    this.reposition_();
+    this.$el_.fadeIn();
  };
 
 /**
@@ -661,27 +691,8 @@ yk.ui.Dialog.prototype.open = function() {
  */
 yk.ui.Dialog.prototype.hide = function() {
     if (this.$el_) {
-        this.hideInternal();
+        this.$el_.fadeOut();
     }
-};
-
-/**
- * @protected
- */
-yk.ui.Dialog.prototype.openInternal = function() {
-    this.modal_(true);
-    if (!this.$el_.hasClass('modal-dialog')) {
-        this.$el_.addClass('modal-dialog');
-    }
-    this.reposition_();
-    this.$el_.fadeIn();
-};
-
-/**
- * @protected
- */
-yk.ui.Dialog.prototype.hideInternal = function() {
-    this.$el_.fadeOut();
     this.modal_(false);
 };
 
@@ -812,10 +823,9 @@ yk.ui.layout.Table.Row.prototype.append = function(cell) {
 yk.ui.layout.Table.Row.prototype.createDom = function() {
     this.$el_ = $(this.tag_).addClass('layout-table-row');
 
-    var self = this;
     this.cells_.forEach(function(cell) {
-        self.addChild(cell);
-    });
+        this.addChild(cell);
+    }, this);
 };
 
 /**
@@ -882,9 +892,11 @@ yk.ui.Form.prototype.createDom = function() {
 /**
  * @param {function} callback
  * @param {function=} opt_errback
+ * @param {*=} opt_scope
  * @param {boolean=} opt_safe
+ * @return {Deferred}
  */
-yk.ui.Form.prototype.submit = function(callback, opt_errback, opt_safe) {
+yk.ui.Form.prototype.submit = function(callback, opt_errback, opt_scope, opt_safe) {
     if (!this.$el_) {
         this.createDom();
     }
@@ -895,25 +907,27 @@ yk.ui.Form.prototype.submit = function(callback, opt_errback, opt_safe) {
     var data = yk.net.serialize(this.inputs_.map(function(each) {
         return each.toHttpKeyValue();
     }));
-    this.submitInternal_(data, callback, opt_errback).always(unlock);
+    return this.submitInternal_(data, callback, opt_errback, opt_scope).always(unlock);
 };
 
 /**
  * @param {string} data
  * @param {function} callback
  * @param {function=} opt_errback
+ * @param {*=} opt_scope
  * @private
  */
-yk.ui.Form.prototype.submitInternal_ = function(data, callback, opt_errback) {
+yk.ui.Form.prototype.submitInternal_ = function(data, callback, opt_errback, opt_scope) {
+    var scope = opt_scope || this;
     return $.ajax({
-        url: this.url_,
+        url: this.uri_,
         data: data,
         dataType: 'json'
     }).done(function(data) {
-        callback(data);
+        callback.call(scope, data);
     }).fail(function(xhr) {
         if (opt_errback) {
-            opt_errback(xhr);
+            opt_errback.call(scope, xhr);
         }
     });
 };
@@ -924,7 +938,7 @@ yk.ui.Form.prototype.submitInternal_ = function(data, callback, opt_errback) {
  */
 yk.ui.Form.prototype.registerInput = function(control, opt_append) {
     this.inputs_.push(control);
-    if (!yk.isDef(opt_append) || opt_append) {
+    if (yk.isDef(opt_append) && yk.assertBoolean(opt_append)) {
         this.addChild(control);
     }
 };
