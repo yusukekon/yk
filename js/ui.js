@@ -422,6 +422,10 @@ yk.ui.control.Checkbox.prototype.createDom = function() {
     });
 };
 
+/**
+ * @param {Event} evt
+ * @private
+ */
 yk.ui.control.Checkbox.prototype.handleChange_ = function(evt) {
     this.checked_ = !this.checked_;
 };
@@ -755,10 +759,9 @@ yk.inherits(yk.ui.layout.Table, yk.ui.Component);
 yk.ui.layout.Table.prototype.createDom = function() {
     this.$el_ = $('<table>');
 
-    var self = this;
     this.rows_.forEach(function(row) {
-        self.addChild(row);
-    });
+        this.addChild(row);
+    }, this);
 };
 
 /**
@@ -849,11 +852,12 @@ yk.ui.layout.Table.Cell.prototype.createDom = function() {
 /**
  *
  * @param {string} action
+ * @param {string=} opt_method
  * @param {Object=} opt_options
  * @constructor
  * @inherits {yk.ui.Component}
  */
-yk.ui.Form = function(uri, opt_options) {
+yk.ui.Form = function(uri, opt_method, opt_options) {
     yk.super(this);
 
     /**
@@ -861,6 +865,12 @@ yk.ui.Form = function(uri, opt_options) {
      * @private
      */
     this.uri_ = uri;
+
+    /**
+     * @type {string}
+     * @private
+     */
+    this.method_ = opt_method || 'POST';
 
     /**
      * @type {!Object}
@@ -914,7 +924,8 @@ yk.ui.Form.prototype.submitInternal_ = function(data, callback, opt_errback, opt
     return $.ajax({
         url: this.uri_,
         data: data,
-        dataType: 'json'
+        dataType: 'json',
+        method: this.method_
     }).done(function(data) {
         callback.call(scope, data);
     }).fail(function(xhr) {
@@ -930,7 +941,7 @@ yk.ui.Form.prototype.submitInternal_ = function(data, callback, opt_errback, opt
  */
 yk.ui.Form.prototype.registerInput = function(control, opt_append) {
     this.inputs_.push(control);
-    if (yk.isDef(opt_append) && yk.assertBoolean(opt_append)) {
+    if (!yk.isDef(opt_append) || yk.assertBoolean(opt_append)) {
         this.addChild(control);
     }
 };
@@ -944,7 +955,7 @@ yk.ui.Form.prototype.lock_ = function(opt_timeout) {
     var locked = [];
     this.inputs_.forEach(function(each) {
         // 元々 disabled な要素には何もしない
-        if (!each.disabled()) {
+        if (each.rendered() && !each.disabled()) {
             each.disabled(true) ;
             locked.push(each);
         }
