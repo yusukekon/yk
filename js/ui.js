@@ -809,7 +809,7 @@ yk.inherits(yk.ui.layout.Table.Row, yk.ui.Component);
  */
 yk.ui.layout.Table.Row.prototype.append = function(cell) {
     this.cells_.push(new yk.ui.layout.Table.Cell(cell));
-    if (this.rendered()) {
+    if (this.$el_) {
         this.addChild(cell);
     }
 };
