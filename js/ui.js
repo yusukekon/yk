@@ -692,7 +692,7 @@ yk.ui.Dialog.prototype.hide = function(opt_disposeOnClose) {
     }
     this.modal_(false);
 
-    var disposeOnClose = yk.isDef(opt_disposeOnClose) ? yk.assertBoolean(opt_disposeOnClose) : true;
+    var disposeOnClose = yk.isDef(opt_disposeOnClose) ? yk.assertBoolean(opt_disposeOnClose) : false;
     if (disposeOnClose) {
         setTimeout(function () {
             this.dispose();
@@ -743,7 +743,7 @@ yk.ui.Dialog.prototype.createDefaultCancelButton = function() {
         value: 'cancel'
     });
     cancel.bind('click', function(evt) {
-        this.hide();
+        this.hide(false);
     }, this);
     return cancel;
 };
@@ -813,10 +813,11 @@ yk.ui.layout.Table.Row = function(opt_cells, opt_tag) {
 yk.inherits(yk.ui.layout.Table.Row, yk.ui.Component);
 
 /**
- * @param {string|yk.ui.Component} cell
+ * @param {string|yk.ui.Component} inner
  */
-yk.ui.layout.Table.Row.prototype.append = function(cell) {
-    this.cells_.push(new yk.ui.layout.Table.Cell(cell));
+yk.ui.layout.Table.Row.prototype.append = function(inner) {
+    var cell = new yk.ui.layout.Table.Cell(inner);
+    this.cells_.push(cell);
     if (this.$el_) {
         this.addChild(cell);
     }
@@ -829,6 +830,18 @@ yk.ui.layout.Table.Row.prototype.createDom = function() {
     this.cells_.forEach(function(cell) {
         this.addChild(cell);
     }, this);
+};
+
+/**
+ * @param {number} index
+ * @return {yk.ui.layout.Table.Cell}
+ */
+yk.ui.layout.Table.Row.prototype.getCellAt = function(index) {
+    var i = yk.assertNumber(index);
+    if (i < 0 || i > (this.cells_.length - 1)) {
+        throw Error('Index out of bounds');
+    }
+    return this.cells_[i];
 };
 
 /**
@@ -853,8 +866,23 @@ yk.ui.layout.Table.Cell.prototype.createDom = function() {
     if (this.inner_ instanceof yk.ui.Component) {
         this.addChild(this.inner_);
     } else {
-        this.$el_.text(this.inner_);
+        this.$el_.text(yk.assertString(this.inner_));
     }
+};
+
+/**
+ * @param {string|yk.ui.Component} inner
+ */
+yk.ui.layout.Table.Cell.prototype.replace = function(inner) {
+    if (this.inner_ instanceof yk.ui.Component) {
+        yk.assertInstanceof(inner, yk.ui.Component);
+        this.inner_.dispose();
+        this.addChild(inner);
+    } else {
+        yk.assertString(inner);
+        this.$el_.text(yk.assertString(inner));
+    }
+    this.inner_ = inner;
 };
 
 /**
