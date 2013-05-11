@@ -661,11 +661,12 @@ yk.inherits(yk.ui.Dialog, yk.ui.Component);
  */
 yk.ui.Dialog.MODAL_BG_CLASS = 'modal-dialog-bg';
 
-/** @override */
-yk.ui.Dialog.prototype.dispose = function() {
-    this.hide();
-    yk.super(this, 'dispose');
-};
+
+/**
+ * @type {string}
+ * @const
+ */
+yk.ui.Dialog.MODAL_DIALOG_CLASS = 'modal-dialog';
 
 /**
  *
@@ -675,21 +676,28 @@ yk.ui.Dialog.prototype.open = function() {
         this.render(this.$parent_);
     }
     this.modal_(true);
-    if (!this.$el_.hasClass('modal-dialog')) {
-        this.$el_.addClass('modal-dialog');
+    if (!this.$el_.hasClass(yk.ui.Dialog.MODAL_DIALOG_CLASS)) {
+        this.$el_.addClass(yk.ui.Dialog.MODAL_DIALOG_CLASS);
     }
     this.reposition_();
     this.$el_.fadeIn();
  };
 
 /**
- *
+ * @param {boolean=} opt_disposeOnClose
  */
-yk.ui.Dialog.prototype.hide = function() {
+yk.ui.Dialog.prototype.hide = function(opt_disposeOnClose) {
     if (this.$el_) {
         this.$el_.fadeOut();
     }
     this.modal_(false);
+
+    var disposeOnClose = yk.isDef(opt_disposeOnClose) ? yk.assertBoolean(opt_disposeOnClose) : true;
+    if (disposeOnClose) {
+        setTimeout(function () {
+            this.dispose();
+        }.bind(this), 1000);
+    }
 };
 
 /**
@@ -699,9 +707,9 @@ yk.ui.Dialog.prototype.hide = function() {
  */
 yk.ui.Dialog.prototype.modal_ = function(on) {
     if (yk.assertBoolean(on)) {
-        $('<div id="modal-dialog-bg">').addClass(yk.ui.Dialog.MODAL_BG_CLASS).appendTo(yk.document.body);
+        $('<div>').prop('id', this.hashcode()).addClass(yk.ui.Dialog.MODAL_BG_CLASS).appendTo(yk.document.body);
     } else {
-        $('#modal-dialog-bg').remove();
+        $('#' + this.hashcode()).remove();
     }
 };
 
