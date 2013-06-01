@@ -32,18 +32,12 @@ yk.ui.Component = function() {
     this.children_ = [];
 
     /**
-     * @type {!Object.<string, Array.<function>>}
-     * @private
-     */
-    this.handlers_ = {};
-
-    /**
      * @type {Array.<yk.ui.Component>}
      * @private
      */
     this.disposables_ = [];
 };
-yk.inherits(yk.ui.Component, yk.Object);
+yk.inherits(yk.ui.Component, yk.EventTarget);
 
 /**
  * @return {boolean}
@@ -116,27 +110,29 @@ yk.ui.Component.prototype.registerDisposable = function(target) {
     this.disposables_.push(target);
 };
 
-/**
- *
- */
+/** @override */
 yk.ui.Component.prototype.dispose = function() {
+    yk.super(this, 'dispose');
+
     if (this.$el_) {
         this.$el_.remove();
-        this.$el_ = null;
+        delete this.$el_;
+    }
+    if (this.parent_) {
+        delete this.parent_;
     }
     if (this.children_) {
         this.children_.forEach(function(child) {
             child.dispose();
         });
-        this.children_ = null;
+        delete this.children_;
     }
     if (this.disposables_) {
         this.disposables_.forEach(function(each) {
             each.dispose();
         });
-        this.disposables_ = null;
+        delete this.disposables_
     }
-    this.handlers_ = null;
 };
 
 /**
@@ -167,35 +163,6 @@ yk.ui.Component.prototype.trigger = function(type, opt_data) {
     this.$el_.trigger(type, opt_data);
 };
 
-/**
- *
- * @param {!string} type
- * @param {!function} listener
- */
-yk.ui.Component.prototype.listen = function(type, listener) {
-    if (!this.handlers_[type]) {
-        this.handlers_[type] = [];
-    }
-    this.handlers_[type].push(listener);
-};
-
-/**
- *
- * @param {!string} type
- * @param {*=} opt_data
- */
-yk.ui.Component.prototype.fire = function(type, opt_data) {
-    var listeners = this.handlers_[type];
-    if (listeners) {
-        var self = this;
-        listeners.forEach(function(each) {
-            each.call(self, {
-                target: self,
-                data: opt_data || null
-            });
-        });
-    }
-};
 
 /**
  * @param {string} url
