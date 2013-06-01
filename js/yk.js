@@ -18,7 +18,7 @@ yk.DEBUG = true;
  * @type {Array.<string>}
  */
 yk.modules = [
-    'util', 'net', 'model', 'ui'
+    'templates', 'util', 'net', 'model', 'ui'
 ];
 
 /**

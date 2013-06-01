@@ -7,7 +7,7 @@ from glob import glob
 OUT_FILENAME = 'templates.js'
 
 if len(sys.argv) < 2:
-    print 'usage: ./build-templates.py'
+    print 'usage: ./build-templates.py path/to/tpl/dir'
     sys.exit(0)
 
 path = abspath(sys.argv[1])
@@ -18,7 +18,8 @@ if not exists(path):
 target = join(path, '*.tpl');
 
 out = open(abspath(join(path, '..', OUT_FILENAME)), 'wb')
-out.write("yk.package('yk.templates')\n")
+out.write("define(['yk'], function() {\n")
+out.write("yk.package('yk.templates');\n")
 for tpl in glob(target):
     name = basename(tpl).split('.')[0]
     lines = []
@@ -26,4 +27,5 @@ for tpl in glob(target):
         for line in f.readlines():
             lines.append(line.rstrip('\n').strip(' '))
     out.write('yk.templates.' + name + "='" + ''.join(lines) + "'\n")
+out.write("});")
 out.flush()
