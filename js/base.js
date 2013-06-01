@@ -1,16 +1,6 @@
 /**
- * @const
+ * @type {*}
  */
-var yk = yk || {};
-
-/**
- * @type {boolean}
- * @const
- */
-yk.DEBUG = true;
-
-yk.global = this;
-
 yk.document = yk.global.document;
 
 /**
@@ -18,13 +8,13 @@ yk.document = yk.global.document;
  * @param {!Object} parentClass
  */
 yk.inherits = function(childClass, parentClass) {
-  /** @constructor */
-  function temp() {};
-  temp.prototype = parentClass.prototype;
-  childClass.__super__ = parentClass.prototype;
-  childClass.prototype = new temp();
-  /** @override */
-  childClass.prototype.constructor = childClass;
+    /** @constructor */
+    function temp() {};
+    temp.prototype = parentClass.prototype;
+    childClass.__super__ = parentClass.prototype;
+    childClass.prototype = new temp();
+    /** @override */
+    childClass.prototype.constructor = childClass;
 };
 
 /**
@@ -295,3 +285,8 @@ yk.assertInstanceof = function(value, clazz) {
     }
     return /** @type {T} */(value);
 };
+
+define('yk', function(yk) {
+    debugger;
+    return yk;
+});

@@ -56,4 +56,4 @@ yk.Model.prototype.getAsArray = function(json, name, opt_default) {
  */
 yk.Model.prototype.toJSON = function() {
     return {};
-}
+};

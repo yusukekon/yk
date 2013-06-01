@@ -71,5 +71,3 @@ yk.net.HttpKeyValue.prototype.assertValue_ = function(value) {
     }
     return yk.assertString(value);
 };
-
-
