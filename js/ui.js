@@ -20,6 +20,12 @@ yk.ui.Component = function() {
     this.$el_;
 
     /**
+     * @type {yk.ui.Component}
+     * @protected
+     */
+    this.parent_;
+
+    /**
      * @type {Array.<yk.ui.Component>}
      * @protected
      */
@@ -54,19 +60,17 @@ yk.ui.Component.prototype.createDom = function() {
 };
 
 /**
- * @param {!yk.ui.Component} component
+ * @param {!yk.ui.Component} child
  */
 yk.ui.Component.prototype.addChild = function(child) {
     if (!this.$el_) {
         this.createDom();
     }
-    child.render(this.$el_);
-    this.$el_.append(child);
+    child.render(this);
     this.children_.push(child);
 };
 
 /**
- *
  * @return {$}
  */
 yk.ui.Component.prototype.getElement = function() {
@@ -74,7 +78,21 @@ yk.ui.Component.prototype.getElement = function() {
 };
 
 /**
- * @param {Element=|string=} opt_parentEl
+ * @return {yk.ui.Component}
+ */
+yk.ui.Component.prototype.getParent = function() {
+    return this.parent_;
+};
+
+/**
+ * @return {Array.<yk.ui.Component>}
+ */
+yk.ui.Component.prototype.getChildren = function() {
+    return this.children_;
+};
+
+/**
+ * @param {yk.ui.Component|Element=|string=} opt_parentEl
  * @param {boolean=} opt_force
  */
 yk.ui.Component.prototype.render = function(opt_parentEl, opt_force) {
@@ -84,6 +102,10 @@ yk.ui.Component.prototype.render = function(opt_parentEl, opt_force) {
     }
     this.$el_.fadeIn();
     var parentEl = opt_parentEl || document.body;
+    if (parentEl instanceof yk.ui.Component) {
+        this.parent_ = parentEl;
+        parentEl = this.parent_.getElement();
+    }
     this.$el_.appendTo(parentEl);
 };
 

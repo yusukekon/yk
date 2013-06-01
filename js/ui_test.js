@@ -21,6 +21,10 @@ test('ui.Component rendering', function() {
     component.addChild(new yk.ui.Component());
     equal(component.getElement().children().length, 2);
 
+    // 子コンポーネントの親が正しく設定されている
+    ok(component === component.getChildren()[0].getParent());
+    ok(component === component.getChildren()[1].getParent());
+
     // 内部要素が破棄され、親要素から切り離される
     component.dispose();
     ok(!component.getElement());
