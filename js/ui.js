@@ -299,7 +299,7 @@ yk.ui.Control.prototype.toHttpKeyValue = function() {
  * @constructor
  * @inherits {yk.ui.Control}
  */
-yk.ui.control.HtmlControl = function(opt_options) {
+yk.ui.control.NativeControl = function(opt_options) {
     yk.super(this, opt_options);
 
     /**
@@ -308,22 +308,22 @@ yk.ui.control.HtmlControl = function(opt_options) {
      */
     this.$input;
 };
-yk.inherits(yk.ui.control.HtmlControl, yk.ui.Control);
+yk.inherits(yk.ui.control.NativeControl, yk.ui.Control);
 
 /**
  * @return {$}
  */
-yk.ui.control.HtmlControl.prototype.getInput = function() {
+yk.ui.control.NativeControl.prototype.getInput = function() {
     return this.$input;
 };
 
 /** @override */
-yk.ui.control.HtmlControl.prototype.value = function() {
+yk.ui.control.NativeControl.prototype.value = function() {
     return this.getInput().val();
 };
 
 /** @override */
-yk.ui.control.HtmlControl.prototype.disabled = function(opt_disabled) {
+yk.ui.control.NativeControl.prototype.disabled = function(opt_disabled) {
     if (yk.isDef(opt_disabled)) {
         var disabled = yk.assertBoolean(opt_disabled);
         this.getInput().prop('disabled', disabled);
@@ -346,12 +346,12 @@ yk.inherits(yk.ui.control.CustomControl, yk.ui.Control);
 /**
  * @param {Object=} opt_options
  * @constructor
- * @inherits {yk.ui.control.HtmlControl}
+ * @inherits {yk.ui.control.NativeControl}
  */
 yk.ui.control.Textbox = function(opt_options) {
     yk.super(this, opt_options);
 };
-yk.inherits(yk.ui.control.Textbox, yk.ui.control.HtmlControl);
+yk.inherits(yk.ui.control.Textbox, yk.ui.control.NativeControl);
 
 /** @override */
 yk.ui.control.Textbox.prototype.createDom = function() {
@@ -382,7 +382,7 @@ yk.ui.control.Textbox.prototype.value = function(opt_value) {
  * @param {Object=} opt_options
  * @param {string=} opt_label
  * @constructor
- * @inherits {yk.ui.control.HtmlControl}
+ * @inherits {yk.ui.control.NativeControl}
  */
 yk.ui.control.Checkbox = function(opt_options, opt_label) {
     yk.super(this, opt_options);
@@ -399,7 +399,7 @@ yk.ui.control.Checkbox = function(opt_options, opt_label) {
      */
     this.checked_ = Boolean(this.options['checked']);
 };
-yk.inherits(yk.ui.control.Checkbox, yk.ui.control.HtmlControl);
+yk.inherits(yk.ui.control.Checkbox, yk.ui.control.NativeControl);
 
 /** @override */
 yk.ui.control.Checkbox.prototype.createDom = function() {
@@ -443,7 +443,7 @@ yk.ui.control.Checkbox.prototype.checked = function() {
  * @param {Object=} opt_options
  * @param {string=} opt_label
  * @constructor
- * @inherits {yk.ui.control.HtmlControl}
+ * @inherits {yk.ui.control.NativeControl}
  */
 yk.ui.control.RadioButton = function(group, opt_options, opt_label) {
     yk.super(this, opt_options);
@@ -465,7 +465,7 @@ yk.ui.control.RadioButton = function(group, opt_options, opt_label) {
      */
     this.checked_ = group.getOption('default') === this.getOption('value');
 };
-yk.inherits(yk.ui.control.RadioButton , yk.ui.control.HtmlControl);
+yk.inherits(yk.ui.control.RadioButton , yk.ui.control.NativeControl);
 
 /** @override */
 yk.ui.control.RadioButton.prototype.createDom = function() {
@@ -512,7 +512,7 @@ yk.ui.control.RadioButton.prototype.checked = function(opt_checked) {
  * });
  * @param {Object=} opt_options
  * @constructor
- * @inherits {yk.ui.control.HtmlControl}
+ * @inherits {yk.ui.control.NativeControl}
  */
 yk.ui.control.RadioButtons = function(opt_options) {
     yk.super(this, opt_options);
@@ -605,12 +605,12 @@ yk.ui.control.RadioButtons.prototype.disabled = function(opt_disabled) {
 /**
  * @param {Object=} opt_options
  * @constructor
- * @inherits {yk.ui.control.HtmlControl}
+ * @inherits {yk.ui.control.NativeControl}
  */
 yk.ui.control.Hidden = function(opt_options) {
     yk.super(this, opt_options);
 };
-yk.inherits(yk.ui.control.Hidden, yk.ui.control.HtmlControl);
+yk.inherits(yk.ui.control.Hidden, yk.ui.control.NativeControl);
 
 /** @override */
 yk.ui.control.Hidden.prototype.createDom = function() {
@@ -621,12 +621,12 @@ yk.ui.control.Hidden.prototype.createDom = function() {
 /**
  * @param {Object=} opt_options
  * @constructor
- * @inherits {yk.ui.control.HtmlControl}
+ * @inherits {yk.ui.control.NativeControl}
  */
 yk.ui.control.Button = function(opt_options) {
     yk.super(this, opt_options);
 };
-yk.inherits(yk.ui.control.Button, yk.ui.control.HtmlControl);
+yk.inherits(yk.ui.control.Button, yk.ui.control.NativeControl);
 
 /** @override */
 yk.ui.control.Button.prototype.createDom = function() {
