@@ -21,10 +21,17 @@ yk.modules = [
     'templates', 'util', 'net', 'model', 'ui'
 ];
 
+requirejs.config({
+    paths: {
+        'jquery': '../3rd-party/jquery-1.9.1',
+        'jquery-template': '../3rd-party/jquery-template.min'
+    }
+});
+
 /**
  * load framework
  */
-define(['../3rd-party/jquery-1.9.1.js', '../3rd-party/jquery-template.min.js', 'base'], function() {
+define(['jquery', 'jquery-template', 'base'], function() {
     require(yk.modules);
     return yk;
 });
