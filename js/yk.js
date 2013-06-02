@@ -24,7 +24,7 @@ yk.modules = [
 /**
  * load framework
  */
-define(['base'], function() {
+define(['../3rd-party/jquery-1.9.1.js', '../3rd-party/jquery-template.min.js', 'base'], function() {
     require(yk.modules);
     return yk;
 });
