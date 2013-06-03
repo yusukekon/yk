@@ -50,23 +50,6 @@ test('ui.Component event', function() {
     equal(component.getElement()[0], triggeredEvent.wrapped.target);
     // TODO: なぜか data が渡ってこない。。。
     equal(/*'hoge'*/null, triggeredEvent.wrapped.data);
-
-
-    /**
-     * 特定のコンポーネントに対してのみ発火させるイベント。
-     * イベント伝搬等が不要で、シンプルに実装したい場合に利用する。
-     */
-    var firedEvent = null;
-    // listen は render されてなくても呼び出せる
-    component.listen('sampleEvent', function(evt) {
-        firedEvent = evt;
-    });
-    component.fire('sampleEvent', 'hoge');
-
-    // target は component 自身
-    ok(component.equals(firedEvent.target));
-    // イベント発火時に渡したデータ
-    ok('hoge', firedEvent.data);
 });
 
 module('ui.DynamicComponent', {

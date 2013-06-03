@@ -146,60 +146,12 @@ yk.Object.prototype.equals = function(target) {
  */
 yk.Object.prototype.dispose = function() {
     if (this.disposed_) {
+        this.disposed_ = true;
         return;
     }
     delete this.objectId_;
 };
 
-/**
- * @constructor
- * @inherits {yk.Object}
- */
-yk.EventTarget = function() {
-
-    /**
-     * @type {!Object.<string, Array.<function>>}
-     * @private
-     */
-    this.handlers_ = {};
-};
-yk.inherits(yk.EventTarget, yk.Object);
-
-/** @override */
-yk.EventTarget.prototype.dispose = function() {
-    yk.super(this, 'dispose');
-    delete this.handlers_;
-};
-
-/**
- *
- * @param {!string} type
- * @param {!function} listener
- */
-yk.EventTarget.prototype.listen = function(type, listener) {
-    if (!this.handlers_[type]) {
-        this.handlers_[type] = [];
-    }
-    this.handlers_[type].push(listener);
-};
-
-/**
- *
- * @param {!string} type
- * @param {*=} opt_data
- */
-yk.EventTarget.prototype.fire = function(type, opt_data) {
-    var listeners = this.handlers_[type];
-    if (listeners) {
-        var self = this;
-        listeners.forEach(function(each) {
-            each.call(self, {
-                target: self,
-                data: opt_data || null
-            });
-        });
-    }
-};
 
 /**
  * native な配列であれば true を返す
@@ -285,8 +237,3 @@ yk.assertInstanceof = function(value, clazz) {
     }
     return /** @type {T} */(value);
 };
-
-define('yk', function(yk) {
-    debugger;
-    return yk;
-});

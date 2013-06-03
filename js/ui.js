@@ -37,7 +37,7 @@ yk.ui.Component = function() {
      */
     this.disposables_ = [];
 };
-yk.inherits(yk.ui.Component, yk.EventTarget);
+yk.inherits(yk.ui.Component, yk.event.EventTarget);
 
 /**
  * @return {boolean}

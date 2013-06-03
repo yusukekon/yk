@@ -18,7 +18,7 @@ yk.DEBUG = true;
  * @type {Array.<string>}
  */
 yk.modules = [
-    'templates', 'util', 'net', 'model', 'ui'
+    'templates', 'event', 'util', 'net', 'model', 'ui'
 ];
 
 requirejs.config({
@@ -31,7 +31,9 @@ requirejs.config({
 /**
  * load framework
  */
-define(['jquery', 'jquery-template', 'base'], function() {
-    require(yk.modules);
+define(['jquery', 'base'], function() {
+    require(['jquery-template'], function() {
+        require(yk.modules);
+    });
     return yk;
 });

@@ -8,7 +8,7 @@ yk.Model = function(opt_json) {
         this.load(opt_json);
     }
 };
-yk.inherits(yk.Model, yk.EventTarget);
+yk.inherits(yk.Model, yk.event.EventTarget);
 
 /**
  * @param {!Object} json
