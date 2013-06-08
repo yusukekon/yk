@@ -18,7 +18,7 @@ if not exists(path):
 target = join(path, '*.tpl');
 
 out = open(abspath(join(path, '..', OUT_FILENAME)), 'wb')
-out.write("define(['yk'], function() {\n")
+out.write("define(['yk/base'], function() {\n")
 out.write("yk.package('yk.templates');\n")
 for tpl in glob(target):
     name = basename(tpl).split('.')[0]
