@@ -1,4 +1,4 @@
-define(function() {
+define(['yk/base'], function() {
 
     yk.package('yk.util');
     yk.package('yk.string');
