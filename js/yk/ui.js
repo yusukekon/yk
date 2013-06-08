@@ -1,4 +1,4 @@
-define(['3rd/jquery-template', 'yk/base', 'yk/util', 'yk/net', 'yk/model'], function() {
+define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model'], function() {
 
     yk.package('yk.ui');
     yk.package('yk.ui.control');

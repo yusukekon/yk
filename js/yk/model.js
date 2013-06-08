@@ -1,4 +1,4 @@
-define(['yk/base', 'yk/event'], function() {
+define(['yk/event'], function() {
 
     /**
      *

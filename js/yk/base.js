@@ -1,9 +1,25 @@
-define(['yk'], function() {
+/**
+ * @const
+ */
+var yk = yk || {};
+
+define(function() {
+
+    /**
+     * @type {*}
+     */
+    yk.global = this;
 
     /**
      * @type {*}
      */
     yk.document = yk.global.document;
+
+    /**
+     * @type {boolean}
+     * @const
+     */
+    yk.DEBUG = false;
 
     /**
      * @param {!Object} childClass

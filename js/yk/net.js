@@ -1,4 +1,4 @@
-define(['yk/base', 'yk/util'], function() {
+define(['yk/util'], function() {
 
     yk.package('yk.net');
 

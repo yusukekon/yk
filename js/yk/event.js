@@ -1,4 +1,4 @@
-define(['yk/base'], function() {
+define(function() {
 
     yk.package('yk.event');
 
