@@ -81,7 +81,7 @@ define(['yk/ui'], function() {
 
     /** @override */
     yk.ui.control.NativeControl.prototype.value = function() {
-        return this.getInput().val();
+        return this.getInput() ? this.getInput().val() : this.getOption('value');
     };
 
     /** @override */
@@ -128,9 +128,13 @@ define(['yk/ui'], function() {
      */
     yk.ui.control.Textbox.prototype.value = function(opt_value) {
         if (opt_value === undefined) {
-            return this.$input.val();
+            return yk.super(this, 'value');
         }
-        this.$input.val(opt_value);
+        if (this.getInput()) {
+            this.$input.val(opt_value);
+        } else {
+            this.setOption('value', 'opt_value');
+        }
         return opt_value;
     };
 
