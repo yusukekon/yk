@@ -12,5 +12,9 @@ require(['yk', '3rd/jquery'], function() {
     require(['yk/util_test']);
     require(['yk/net_test']);
     require(['yk/model_test']);
+    require(['yk/form_test']);
     require(['yk/ui_test']);
+    require(['yk/ui/control_test']);
+    require(['yk/ui/layout_test']);
+    require(['yk/ui/dialog_test']);
 });

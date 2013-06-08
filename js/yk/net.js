@@ -24,14 +24,13 @@ define(['yk/util'], function() {
      * @inherits {yk.util.Pair}
      */
     yk.net.HttpKeyValue = function(key, value) {
+        yk.super(this, yk.assertString(key), this.assertValue_(value));
 
         /**
          * @type {boolean}
          * @private
          */
         this.isMultipleValue_ = yk.isArray(value);
-
-        yk.super(this, yk.assertString(key), this.assertValue_(value));
     };
     yk.inherits(yk.net.HttpKeyValue, yk.util.Pair);
 
