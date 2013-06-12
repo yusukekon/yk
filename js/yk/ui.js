@@ -1,4 +1,4 @@
-define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model'], function() {
+define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'], function() {
 
     yk.package('yk.ui');
 
@@ -189,14 +189,14 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model'], function() {
          * @type {Deferred}
          * @private
          */
-        this.$deferred;
+        this.$deferred_;
     };
     yk.inherits(yk.ui.DynamicComponent, yk.ui.Component);
 
     /** @override */
     yk.ui.DynamicComponent.prototype.createDom = function() {
         var self = this;
-        this.$deferred = $.ajax({
+        this.$deferred_ = $.ajax({
             url: this.url_,
             dataType: this.dataType_
         }).done(function(data) {
@@ -214,9 +214,16 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model'], function() {
 
         var self = this;
         var parentEl = opt_parentEl || document;
-        this.$deferred.always(function() {
+        this.$deferred_.always(function() {
             self.$el_ && yk.ui.Component.prototype.render.call(self, parentEl);
         });
+    };
+
+    /**
+     * @return {Deferred}
+     */
+    yk.ui.DynamicComponent.prototype.getDeferred = function() {
+        return this.$deferred_;
     };
 
     /**
@@ -229,4 +236,41 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model'], function() {
      */
     yk.ui.DynamicComponent.prototype.failure = yk.abstractMethod;
 
+
+    /**
+     * @param {yk.ui.DynamicComponent} target
+     * @param {string|Element} opt_parentEl
+     * @constructor
+     * @inherits {yk.ui.Component}
+     */
+    yk.ui.Loading = function(target, opt_parentEl) {
+
+        /**
+         * @type {yk.ui.DynamicComponent}
+         * @private
+         */
+        this.target_ = yk.assertInstanceof(target, yk.ui.DynamicComponent);
+
+        /**
+         * @type {yk.ui.Component|Element=|string=} opt_parentEl
+         * @private
+         */
+        this.parentEl_ = opt_parentEl || yk.global.document.body;
+    };
+    yk.inherits(yk.ui.Loading, yk.ui.Component);
+
+    /** @override */
+    yk.ui.Loading.prototype.createDom = function() {
+        this.$el_ = $(yk.templates.loading);
+    };
+
+    yk.ui.Loading.prototype.render = function(opt_parentEl, opt_force) {
+        yk.super(this, 'render', opt_parentEl || this.parentEl_, opt_force);
+        this.target_.render(this.parentEl_);
+
+        var self = this;
+        this.target_.getDeferred().always(function() {
+            self.dispose();
+        });
+    };
 });

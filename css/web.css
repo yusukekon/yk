@@ -1,11 +1,204 @@
-/* line 4, ../scss/web.scss */
+/* line 3, ../scss/_loading.scss */
+#floatingCirclesG {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  -webkit-transform: 0.6;
+  -moz-transform: 0.6;
+  -ms-transform: 0.6;
+  -o-transform: 0.6;
+  transform: 0.6;
+}
+
+/* line 10, ../scss/_loading.scss */
+.f_circleG {
+  position: absolute;
+  background-color: #FFFFFF;
+  height: 6px;
+  width: 6px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  -moz-animation-name: f_fadeG;
+  -moz-animation-duration: 0.56s;
+  -moz-animation-iteration-count: infinite;
+  -moz-animation-direction: linear;
+  -webkit-animation-name: f_fadeG;
+  -webkit-animation-duration: 0.56s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-direction: linear;
+  -ms-animation-name: f_fadeG;
+  -ms-animation-duration: 0.56s;
+  -ms-animation-iteration-count: infinite;
+  -ms-animation-direction: linear;
+  -o-animation-name: f_fadeG;
+  -o-animation-duration: 0.56s;
+  -o-animation-iteration-count: infinite;
+  -o-animation-direction: linear;
+  animation-name: f_fadeG;
+  animation-duration: 0.56s;
+  animation-iteration-count: infinite;
+  animation-direction: linear;
+}
+
+/* line 47, ../scss/_loading.scss */
+#frotateG_01 {
+  left: 0;
+  top: 13px;
+  -moz-animation-delay: 0.21s;
+  -webkit-animation-delay: 0.21s;
+  -ms-animation-delay: 0.21s;
+  -o-animation-delay: 0.21s;
+  animation-delay: 0.21s;
+}
+
+/* line 53, ../scss/_loading.scss */
+#frotateG_02 {
+  left: 4px;
+  top: 4px;
+  -moz-animation-delay: 0.28s;
+  -webkit-animation-delay: 0.28s;
+  -ms-animation-delay: 0.28s;
+  -o-animation-delay: 0.28s;
+  animation-delay: 0.28s;
+}
+
+/* line 59, ../scss/_loading.scss */
+#frotateG_03 {
+  left: 13px;
+  top: 0;
+  -moz-animation-delay: 0.35s;
+  -webkit-animation-delay: 0.35s;
+  -ms-animation-delay: 0.35s;
+  -o-animation-delay: 0.35s;
+  animation-delay: 0.35s;
+}
+
+/* line 65, ../scss/_loading.scss */
+#frotateG_04 {
+  right: 4px;
+  top: 4px;
+  -moz-animation-delay: 0.42s;
+  -webkit-animation-delay: 0.42s;
+  -ms-animation-delay: 0.42s;
+  -o-animation-delay: 0.42s;
+  animation-delay: 0.42s;
+}
+
+/* line 71, ../scss/_loading.scss */
+#frotateG_05 {
+  right: 0;
+  top: 13px;
+  -moz-animation-delay: 0.49s;
+  -webkit-animation-delay: 0.49s;
+  -ms-animation-delay: 0.49s;
+  -o-animation-delay: 0.49s;
+  animation-delay: 0.49s;
+}
+
+/* line 77, ../scss/_loading.scss */
+#frotateG_06 {
+  right: 4px;
+  bottom: 4px;
+  -moz-animation-delay: 0.56s;
+  -webkit-animation-delay: 0.56s;
+  -ms-animation-delay: 0.56s;
+  -o-animation-delay: 0.56s;
+  animation-delay: 0.56s;
+}
+
+/* line 83, ../scss/_loading.scss */
+#frotateG_07 {
+  left: 13px;
+  bottom: 0;
+  -moz-animation-delay: 0.63s;
+  -webkit-animation-delay: 0.63s;
+  -ms-animation-delay: 0.63s;
+  -o-animation-delay: 0.63s;
+  animation-delay: 0.63s;
+}
+
+/* line 89, ../scss/_loading.scss */
+#frotateG_08 {
+  left: 4px;
+  bottom: 4px;
+  -moz-animation-delay: 0.63s;
+  -webkit-animation-delay: 0.63s;
+  -ms-animation-delay: 0.63s;
+  -o-animation-delay: 0.63s;
+  animation-delay: 0.63s;
+}
+
+@-moz-keyframes f_fadeG {
+  /* line 96, ../scss/_loading.scss */
+  0% {
+    background-color: black;
+  }
+
+  /* line 99, ../scss/_loading.scss */
+  100% {
+    background-color: white;
+  }
+}
+
+@-webkit-keyframes f_fadeG {
+  /* line 105, ../scss/_loading.scss */
+  0% {
+    background-color: black;
+  }
+
+  /* line 108, ../scss/_loading.scss */
+  100% {
+    background-color: white;
+  }
+}
+
+@-ms-keyframes f_fadeG {
+  /* line 114, ../scss/_loading.scss */
+  0% {
+    background-color: black;
+  }
+
+  /* line 117, ../scss/_loading.scss */
+  100% {
+    background-color: white;
+  }
+}
+
+@-o-keyframes f_fadeG {
+  /* line 123, ../scss/_loading.scss */
+  0% {
+    background-color: black;
+  }
+
+  /* line 126, ../scss/_loading.scss */
+  100% {
+    background-color: white;
+  }
+}
+
+@keyframes f_fadeG {
+  /* line 132, ../scss/_loading.scss */
+  0% {
+    background-color: black;
+  }
+
+  /* line 135, ../scss/_loading.scss */
+  100% {
+    background-color: white;
+  }
+}
+
+/* line 5, ../scss/web.scss */
 body {
   color: #333;
   line-height: 1.5;
   background-color: #FFF;
 }
 
-/* line 10, ../scss/web.scss */
+/* line 11, ../scss/web.scss */
 .modal-dialog {
   background-color: #FEFEFE;
   -webkit-box-shadow: black 0 0 25px, rgba(0, 0, 0, 0.2) 0 0 3px 1px inset;
@@ -15,7 +208,7 @@ body {
   position: absolute;
 }
 
-/* line 17, ../scss/web.scss */
+/* line 18, ../scss/web.scss */
 .modal-dialog-bg {
   background-color: #000;
   height: 100%;
