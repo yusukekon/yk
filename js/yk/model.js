@@ -1,16 +1,45 @@
 define(['yk/event'], function() {
 
+    yk.package('yk.model');
+
+    /**
+     * @enum {string}
+     */
+    yk.model.EventType = {
+        UPDATED: 'yk.Model.EventType.UPDATED',
+        DELETED: 'yk.Model.EventType.DELETED'
+    };
+
+    /**
+     * @param {*} target
+     * @param {yk.Model.EventType} type
+     * @param {*=} opt_data
+     * @constructor
+     * @inherits {yk.event.Event}
+     */
+    yk.model.Event = function(target, type, opt_data) {
+        yk.super(this, target, type, opt_data);
+    };
+    yk.inherits(yk.model.Event, yk.event.Event);
+
     /**
      *
      * @param {Object=} opt_json
      * @constructor
+     * @inherits {yk.event.EventTarget}
      */
-    yk.Model = function(opt_json) {
+    yk.model.Model = function(opt_json) {
+        yk.super(this);
         if (opt_json) {
             this.load(opt_json);
         }
     };
-    yk.inherits(yk.Model, yk.event.EventTarget);
+    yk.inherits(yk.model.Model, yk.event.EventTarget);
+
+    /**
+     * @const
+     */
+    yk.Model = yk.model.Model;
 
     /**
      * @param {!Object} json
@@ -24,7 +53,7 @@ define(['yk/event'], function() {
      * @param {boolean=} opt_nullable
      * @param {*=} opt_default
      * @return {*}
-     * @private
+     * @protected
      */
     yk.Model.prototype.get = function(json, name, opt_nullable, opt_default) {
         var nullable = opt_nullable || false;
@@ -33,7 +62,7 @@ define(['yk/event'], function() {
             if (opt_default) {
                 return opt_default;
             }
-            if (opt_nullable) {
+            if (nullable) {
                 return null;
             }
             throw Error("No property exists: " + name);
@@ -47,6 +76,7 @@ define(['yk/event'], function() {
      * @param {string} name
      * @param {Array.<*>} opt_default
      * @return {Array.<*>}
+     * @protected
      */
     yk.Model.prototype.getAsArray = function(json, name, opt_default) {
         var value = this.get(json, name, false, opt_default || []);
@@ -60,4 +90,8 @@ define(['yk/event'], function() {
         return {};
     };
 
+    /** @override */
+    yk.Model.prototype.fire = function(type, opt_data) {
+        this.dispatchEvent(new yk.model.Event(this, type, opt_data));
+    };
 });
