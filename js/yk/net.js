@@ -208,5 +208,4 @@ define(['yk/util'], function() {
         }
         return yk.assertString(value);
     };
-
 });

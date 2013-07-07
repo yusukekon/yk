@@ -94,12 +94,19 @@ define(function() {
     };
 
     /**
-     *
      * @param {*} target
      * @return {boolean}
      */
     yk.isDef = function(target) {
         return target !== undefined;
+    };
+
+    /**
+     * @param {*} target
+     * @return {boolean}
+     */
+    yk.isDefAndNotNull = function(target) {
+        return target != null;
     };
 
     /**

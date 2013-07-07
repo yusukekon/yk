@@ -2,6 +2,79 @@ define(['yk/base'], function() {
 
     yk.package('yk.util');
     yk.package('yk.string');
+    yk.package('yk.object');
+    yk.package('yk.array');
+
+
+    /**
+     * @param {Object} obj
+     * @param {string} key
+     * @param {*=} opt_default
+     */
+    yk.object.get = function(obj, key, opt_default) {
+        var value = obj[key];
+        return yk.isDefAndNotNull(value) ? value : opt_default;
+    };
+
+    /**
+     * @param {Object} target
+     * @return {number}
+     */
+    yk.object.size = function(target) {
+        var count = 0;
+        for (var key in target) {
+            count++;
+        }
+        return count;
+    };
+
+    /**
+     * @param {Object} o1
+     * @param {Object} o2
+     * @param {Function} opt_equality
+     * @return {boolean}
+     */
+    yk.object.equals = function(o1, o2, opt_equality) {
+        if (yk.object.size(o1) !== yk.object.size(o2)) {
+            return false;
+        }
+
+        // TODO: 毎回定義するのが無駄なのでどこかに移動したい
+        var defaultEquality = opt_equality || function(a, b) {
+            if (a instanceof yk.Object && b instanceof yk.Object) {
+                return a.equals(b);
+            }
+            return a === b;
+        }
+
+        var equality = opt_equality || defaultEquality;
+        for (var key in o1) {
+            if (!equality(o1[key], o2[key])) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    /**
+     * @param {!*} target
+     * @param {!*} source
+     */
+    yk.object.mixin = function(target, source) {
+        for (var key in source) {
+            target[key] = source[key];
+        }
+    };
+
+    /**
+     * @param {Array.<*>} a1
+     * @param {Array.<*>} a2
+     * @param {Function} opt_equality
+     * @return {boolean}
+     */
+    yk.array.equals = function(a1, a2, opt_equality) {
+        return yk.object.equals(a1, a2, opt_equality);
+    };
 
     /**
      * @param {string} target
@@ -53,6 +126,48 @@ define(['yk/base'], function() {
      */
     yk.util.Pair.prototype.getSecond = function() {
         return this.second_;
+    };
+
+    /**
+     * @param {*...} var_args
+     * @constructor
+     */
+    yk.util.Tuple = function(var_args) {
+        yk.super(this);
+
+        /**
+         * @type {Array.<*>}
+         * @private
+         */
+        this.values_ = yk.slice(arguments);
+    };
+    yk.inherits(yk.util.Tuple, yk.Object);
+
+    /**
+     * @return {number}
+     */
+    yk.util.Tuple.prototype.length = function() {
+        return this.values_.length;
+    };
+
+    /**
+     * @param {number} index
+     * @return {*}
+     */
+    yk.util.Tuple.prototype.get = function(index) {
+        if (index < 0 || index >= this.length()) {
+            throw new Error('index out of bounds: ' + index);
+        }
+        return this.values_[index];
+    };
+
+    /**
+     *
+     * @param {number} opt_start
+     * @param {number=} opt_end
+     */
+    yk.util.Tuple.prototype.slice = function(start, opt_end) {
+        return yk.slice(this.values_, start, opt_end);
     };
 
     /**
