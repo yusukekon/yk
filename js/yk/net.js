@@ -3,11 +3,19 @@ define(['yk/util'], function() {
     yk.package('yk.net');
 
    /**
-     * @param {string} url
-     * @return {yk.net.HttpBuilder}
-     */
-    yk.net.get = function(url) {
+    * @param {string} url
+    * @return {yk.net.HttpBuilder}
+    */
+    yk.net.request = function(url) {
         return new yk.net.HttpBuilder(url);
+    };
+
+   /**
+    * @param {string} url
+    * @return {yk.net.HttpBuilder}
+    */
+    yk.net.get = function(url) {
+        return yk.net.request(url);
     };
 
     /**
@@ -16,8 +24,10 @@ define(['yk/util'], function() {
      * @return {yk.net.HttpBuilder}
      */
     yk.net.post = function(url, opt_data) {
-        return new yk.net.HttpBuilder(url).method(yk.net.Method.POST).data(opt_data || null);
+        return yk.net.request(url).method(yk.net.Method.POST).data(opt_data || null);
     };
+
+
     /**
      * @enum {string}
      */
@@ -27,6 +37,14 @@ define(['yk/util'], function() {
         PUT: 'PUT',
         DELETE: 'DELETE',
         HEAD: 'HEAD'
+    };
+
+    /**
+     * @enum {string}
+     */
+    yk.net.ContentType = {
+        URLENCODED: 'application/x-www-form-urlencoded',
+        JSON: 'application/json'
     };
 
     /**
@@ -57,13 +75,19 @@ define(['yk/util'], function() {
         this.method_ = yk.net.Method.GET;
 
         /**
+         * @type {yk.net.ContentType}
+         * @private
+         */
+        this.contentType_ = yk.net.ContentType.URLENCODED;
+
+        /**
          * @type {yk.net.DataType}
          * @private
          */
         this.dataType_ = yk.net.DataType.ANY;
 
         /**
-         * @type {!string}
+         * @type {!*}
          */
         this.data_;
     };
@@ -88,7 +112,16 @@ define(['yk/util'], function() {
     };
 
     /**
-     * @param {string} data
+     * @param {yk.net.ContentType} contentType
+     * @return {yk.net.HttpBuilder}
+     */
+    yk.net.HttpBuilder.prototype.contentType = function(contentType) {
+        this.contentType_ = contentType;
+        return this;
+    };
+
+    /**
+     * @param {*} data
      * @return {yk.net.HttpBuilder}
      */
     yk.net.HttpBuilder.prototype.data = function(data) {
@@ -105,7 +138,8 @@ define(['yk/util'], function() {
             method: this.method_,
             url: this.url_,
             dataType: this.dataType_,
-            data: this.data_
+            data: this.data_,
+            contentType: this.contentType_
         }).done(callback);
     };
 
