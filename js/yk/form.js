@@ -3,7 +3,7 @@ define(['yk/net', 'yk/ui/control'], function() {
     /**
      *
      * @param {string} uri
-     * @param {string=} opt_method
+     * @param {yk.net.Method=} opt_method
      * @constructor
      * @inherits {yk.Object}
      */
@@ -17,10 +17,10 @@ define(['yk/net', 'yk/ui/control'], function() {
         this.uri_ = uri;
 
         /**
-         * @type {string}
+         * @type {yk.net.Method}
          * @private
          */
-        this.method_ = opt_method || 'POST';
+        this.method_ = opt_method || yk.net.Method.POST;
 
         /**
          * @type {Array.<yk.ui.Control>}
@@ -52,7 +52,7 @@ define(['yk/net', 'yk/ui/control'], function() {
      * @param {yk.ui.Control} control
      */
     yk.Form.prototype.registerInput = function(control) {
-        this.inputs_.push(control);
+        this.inputs_.push(yk.assertInstanceof(control, yk.ui.Control));
     };
 
     /**
@@ -60,17 +60,13 @@ define(['yk/net', 'yk/ui/control'], function() {
      * @param {function} callback
      * @param {function=} opt_errback
      * @param {*=} opt_scope
+     * @return {Deferred}
      * @private
      */
     yk.Form.prototype.submitInternal_ = function(data, callback, opt_errback, opt_scope) {
         var scope = opt_scope || this;
-        return $.ajax({
-            url: this.uri_,
-            data: data,
-            dataType: 'json',
-            method: this.method_
-        }).done(function(data) {
-            callback.call(scope, data);
+        return yk.net.post(this.uri_, data).as(yk.net.DataType.JSON).send(function(resp) {
+            callback.call(scope, resp);
         }).fail(function(xhr) {
             if (opt_errback) {
                 opt_errback.call(scope, xhr);

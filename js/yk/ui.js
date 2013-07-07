@@ -196,11 +196,8 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
     /** @override */
     yk.ui.DynamicComponent.prototype.createDom = function() {
         var self = this;
-        this.$deferred_ = $.ajax({
-            url: this.url_,
-            dataType: this.dataType_
-        }).done(function(data) {
-            self.createDynamicDom(data);
+        this.$deferred_ = yk.net.get(this.url_).as(yk.net.DataType.JSON).send(function(resp) {
+            self.createDynamicDom(resp);
         }).fail(function(xhr) {
             self.failure(xhr);
         });

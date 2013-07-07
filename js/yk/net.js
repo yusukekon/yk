@@ -2,8 +2,111 @@ define(['yk/util'], function() {
 
     yk.package('yk.net');
 
-    yk.net.post = function() {
+   /**
+     * @param {string} url
+     * @return {yk.net.HttpBuilder}
+     */
+    yk.net.get = function(url) {
+        return new yk.net.HttpBuilder(url);
+    };
 
+    /**
+     * @param {string} url
+     * @param {string=} opt_data
+     * @return {yk.net.HttpBuilder}
+     */
+    yk.net.post = function(url, opt_data) {
+        return new yk.net.HttpBuilder(url).method(yk.net.Method.POST).data(opt_data || null);
+    };
+    /**
+     * @enum {string}
+     */
+    yk.net.Method = {
+        GET: 'GET',
+        POST: 'POST',
+        PUT: 'PUT',
+        DELETE: 'DELETE',
+        HEAD: 'HEAD'
+    };
+
+    /**
+     * @enum {string}
+     */
+    yk.net.DataType = {
+        JSON: 'json',
+        HTML: 'html',
+        ANY: '*'
+    };
+
+    /**
+     * @param {string} url
+     * @constructor
+     */
+    yk.net.HttpBuilder = function(url) {
+
+        /**
+         * @type {string}
+         * @private
+         */
+        this.url_ = url;
+
+        /**
+         * @type {yk.net.Method}
+         * @private
+         */
+        this.method_ = yk.net.Method.GET;
+
+        /**
+         * @type {yk.net.DataType}
+         * @private
+         */
+        this.dataType_ = yk.net.DataType.ANY;
+
+        /**
+         * @type {!string}
+         */
+        this.data_;
+    };
+    yk.inherits(yk.net.HttpBuilder, yk.Object);
+
+    /**
+     * @param {yk.net.DataType} dataType
+     * @return {yk.net.HttpBuilder}
+     */
+    yk.net.HttpBuilder.prototype.as = function(dataType) {
+        this.dataType_ = dataType;
+        return this;
+    };
+
+    /**
+     * @param {yk.net.Method} method
+     * @return {yk.net.HttpBuilder}
+     */
+    yk.net.HttpBuilder.prototype.method = function(method) {
+        this.method_ = method;
+        return this;
+    };
+
+    /**
+     * @param {string} data
+     * @return {yk.net.HttpBuilder}
+     */
+    yk.net.HttpBuilder.prototype.data = function(data) {
+        this.data_ = data;
+        return this;
+    };
+
+    /**
+     * @param {Function} callback
+     * @return {Deferred}
+     */
+    yk.net.HttpBuilder.prototype.send = function(callback) {
+        return $.ajax({
+            method: this.method_,
+            url: this.url_,
+            dataType: this.dataType_,
+            data: this.data_
+        }).done(callback);
     };
 
     /**
