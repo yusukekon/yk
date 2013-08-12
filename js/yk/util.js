@@ -59,9 +59,14 @@ define(['yk/base'], function() {
     /**
      * @param {!*} target
      * @param {!*} source
+     * @param {boolean=} opt_ownPropertyOnly
      */
-    yk.object.mixin = function(target, source) {
+    yk.object.mixin = function(target, source, opt_ownPropertyOnly) {
+        var ownPropertyOnly = yk.isDef(opt_ownPropertyOnly) ? yk.assertBoolean(opt_ownPropertyOnly) : false;
         for (var key in source) {
+            if (ownPropertyOnly && !target.hasOwnProperty(key)) {
+                continue;
+            }
             target[key] = source[key];
         }
     };

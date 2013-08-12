@@ -95,6 +95,12 @@ define(['yk/util'], function() {
             d: 400
         };
         ok(yk.object.equals(expected, obj));
+
+        // ownPropertyOnly フラグを立てると、存在しないプロパティは設定しない
+        yk.object.mixin(obj, {
+            z: 1000
+        }, true);
+        ok(yk.object.equals(expected, obj));
     });
 
     test('util.Pair', function() {

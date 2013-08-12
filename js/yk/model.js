@@ -94,4 +94,12 @@ define(['yk/event'], function() {
     yk.Model.prototype.fire = function(type, opt_data) {
         this.dispatchEvent(new yk.model.Event(this, type, opt_data));
     };
+
+    /**
+     * @param {!Object} data
+     */
+    yk.Model.prototype.modify = function(data) {
+        yk.object.mixin(this, data, true);
+        this.fire(yk.Model.EventType.UPDATED);
+    };
 });

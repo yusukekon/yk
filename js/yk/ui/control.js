@@ -369,6 +369,72 @@ define(['yk/ui'], function() {
     };
 
     /**
+     * @param {Array.<yk.ui.Pair>} choices
+     * @param {Object=} opt_options
+     * @constructor
+     * @inherits {yk.ui.control.NativeControl}
+     */
+    yk.ui.control.Selectbox = function(choices, opt_options) {
+        yk.super(this, opt_options);
+
+        /**
+         * @type {Array<yk.util.Pair>}
+         * @private
+         */
+        this.choices_ = choices;
+
+        /**
+         * @type {string}
+         * @private
+         */
+        this.value_ = this.options['value'];
+    };
+    yk.inherits(yk.ui.control.Selectbox, yk.ui.control.NativeControl);
+
+    /** @override */
+    yk.ui.control.Selectbox.prototype.createDom = function() {
+        this.$input = $('<select></select>').prop(this.options);
+        (this.choices_ || []).forEach(function(each) {
+            $('<option></option>').prop('value', each.getSecond()).text(each.getFirst()).appendTo(this.$input);
+        }, this);
+        this.$input.val(this.value_);
+
+        this.$el_ = $('<span class="control-selectbox">').append(this.$input);
+
+        this.bind('change', function(evt) {
+            this.handleChange_(evt);
+        }, this);
+        this.listen('change', function(evt) {
+            this.handleChange_(evt);
+        }, this);
+    };
+
+    /**
+     * @param {Event} evt
+     * @private
+     */
+    yk.ui.control.Selectbox.prototype.handleChange_ = function(evt) {
+        this.value_ = this.$input.val();
+    };
+
+    /**
+     * @param {string=} opt_value
+     * @return {string}
+     * @override
+     */
+    yk.ui.control.Selectbox.prototype.value = function(opt_value) {
+        if (opt_value === undefined) {
+            return yk.super(this, 'value');
+        }
+        if (this.getInput()) {
+            this.$input.val(opt_value || null);
+        } else {
+            this.setOption('value', 'opt_value');
+        }
+        return opt_value;
+    };
+
+    /**
      * @param {Object=} opt_options
      * @constructor
      * @inherits {yk.ui.control.NativeControl}

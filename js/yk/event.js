@@ -54,12 +54,16 @@ define(['yk/base'], function() {
      *
      * @param {!string} type
      * @param {!function} listener
+     * @param {*=} opt_scope
      */
-    yk.event.EventTarget.prototype.listen = function(type, listener) {
+    yk.event.EventTarget.prototype.listen = function(type, listener, opt_scope) {
         if (!this.handlers_[type]) {
             this.handlers_[type] = [];
         }
-        this.handlers_[type].push(listener);
+        var scope = opt_scope || this;
+        this.handlers_[type].push(function() {
+            listener.apply(scope, arguments);
+        });
     };
 
     /**
