@@ -224,4 +224,6 @@ body {
 /* line 29, ../scss/web.scss */
 label {
   display: inline-block;
+  vertical-align: middle;
+  margin: 4px 0 0;
 }
