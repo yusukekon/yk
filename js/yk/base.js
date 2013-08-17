@@ -121,6 +121,26 @@ define(function() {
     };
 
     /**
+     * @param {function} fn
+     * @param {*} obj
+     * @param {...*} var_args
+     */
+    yk.bind = function(fn, obj, var_args) {
+        var args = yk.slice(arguments, 2);
+        // TODO: EC5 未満のブラウザに対応
+        return fn.bind(obj, args);
+    };
+
+    /**
+     *
+     * @param {function} fn
+     * @param {number} delay
+     */
+    yk.delay = function(fn, delay) {
+        yk.global.setTimeout(yk.bind(fn, this), delay);
+    };
+
+    /**
      * @TODO ちゃんとする
      * @return {string}
      */
@@ -163,20 +183,18 @@ define(function() {
         if (!target || !(target instanceof yk.Object)) {
             return false;
         }
-        return (this === target && this.hashcode() === target.hashcode());
+        return this.hashcode() === target.hashcode();
     };
 
     /**
      *
      */
     yk.Object.prototype.dispose = function() {
-        if (this.disposed_) {
+        if (!this.disposed_) {
             this.disposed_ = true;
-            return;
+            delete this.objectId_;
         }
-        delete this.objectId_;
     };
-
 
     /**
      * native な配列であれば true を返す
@@ -196,7 +214,7 @@ define(function() {
     };
 
     /**
-     * @param {!*} value
+     * @param {*} value
      * @return {!*}
      */
     yk.assertDefAndNotNull = function(value) {
@@ -207,7 +225,7 @@ define(function() {
     };
 
     /**
-     * @param {string} value
+     * @param {*} value
      * @return {string}
      */
     yk.assertString = function(value) {
@@ -218,7 +236,7 @@ define(function() {
     };
 
     /**
-     * @param {number} value
+     * @param {*} value
      * @return {number}
      */
     yk.assertNumber = function(value) {
@@ -229,7 +247,7 @@ define(function() {
     };
 
     /**
-     * @param {boolean} value
+     * @param {*} value
      * @return {boolean}
      */
     yk.assertBoolean = function(value) {
@@ -240,7 +258,18 @@ define(function() {
     };
 
     /**
-     * @param value
+     * @param {*} value
+     * @return {function}
+     */
+    yk.assertFunction = function(value) {
+        if (yk.DEBUG && typeof value !== "function") {
+            throw TypeError('must be function');
+        }
+        return /** @type {function} */(value);
+    };
+
+    /**
+     * @param {*} value
      * @return Array.<*>
      */
     yk.assertArray = function(value) {
