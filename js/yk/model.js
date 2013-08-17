@@ -100,6 +100,6 @@ define(['yk/event'], function() {
      */
     yk.Model.prototype.modify = function(data) {
         yk.object.mixin(this, data, true);
-        this.fire(yk.Model.EventType.UPDATED);
+        this.fire(yk.model.EventType.UPDATED);
     };
 });
