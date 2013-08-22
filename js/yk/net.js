@@ -156,7 +156,7 @@ define(['yk/util'], function() {
 
     /**
      * @param {string} key
-     * @param {string?|Array.<string>} value
+     * @param {?string|Array.<string>} value
      * @constructor
      * @inherits {yk.util.Pair}
      */
@@ -170,6 +170,7 @@ define(['yk/util'], function() {
         this.isMultipleValue_ = yk.isArray(value);
     };
     yk.inherits(yk.net.HttpKeyValue, yk.util.Pair);
+
 
     /**
      * @return {string}
@@ -207,5 +208,72 @@ define(['yk/util'], function() {
             return value;
         }
         return yk.assertString(value);
+    };
+
+    /**
+     * @param {string} query
+     * @constructor
+     */
+    yk.net.Query = function(query) {
+        yk.super(this);
+
+        /**
+         * @type {Object.<string, yk.net.HttpKeyValue>}
+         * @private
+         */
+        this.params_ = {};
+
+        yk.net.Query.parse(query).forEach(function(keyValue) {
+            this.params_[keyValue.getKey()] = keyValue;
+        }, this);
+    };
+    yk.inherits(yk.net.Query, yk.Object);
+
+    /**
+     * @param {string} query
+     * @return {Array.<yk.net.HttpKeyValue>}
+     */
+    yk.net.Query.parse = function(query) {
+        var result = [];
+        yk.assertString(query).split('&').forEach(function(keyValue) {
+            var equalIndex = keyValue.indexOf('=');
+            if (equalIndex === -1) {
+                result.push(new yk.net.HttpKeyValue(keyValue, ''));
+            } else {
+                var key = keyValue.substring(0, equalIndex);
+                var value = keyValue.substring(equalIndex + 1);
+                result.push(new yk.net.HttpKeyValue(key, value));
+            }
+        });
+        return result;
+    };
+
+    /**
+     * @param {string} key
+     * @return {?string|Array.<string>}
+     */
+    yk.net.Query.prototype.getValue = function(key) {
+        if (!(key in this.params_)) {
+            return null;
+        }
+        return this.params_[key].getValue();
+    };
+
+    /**
+     * @return {Array.<yk.net.HttpKeyValue>}
+     */
+    yk.net.Query.prototype.params = function() {
+        return yk.object.values(this.params_);
+    };
+
+    /**
+     * @return {Array.<yk.net.HttpKeyValue>}
+     */
+    yk.net.Query.prototype.asJson = function() {
+        var json = {};
+        this.params().forEach(function(each) {
+            json[each.getKey()] = each.getValue();
+        }, this);
+        return json;
     };
 });

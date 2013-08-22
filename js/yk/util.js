@@ -57,8 +57,8 @@ define(['yk/base'], function() {
     };
 
     /**
-     * @param {!*} target
-     * @param {!*} source
+     * @param {!Object} target
+     * @param {!Object} source
      * @param {boolean=} opt_ownPropertyOnly
      */
     yk.object.mixin = function(target, source, opt_ownPropertyOnly) {
@@ -69,6 +69,21 @@ define(['yk/base'], function() {
             }
             target[key] = source[key];
         }
+    };
+
+    /**
+     * @param {!Object} target
+     * @return {Array}
+     */
+    yk.object.values = function(target) {
+        var values = [];
+        for (var key in target) {
+            var value = target[key];
+            if (value != null) {
+                values.push(value);
+            }
+        }
+        return values;
     };
 
     /**

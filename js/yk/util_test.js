@@ -103,6 +103,17 @@ define(['yk/util'], function() {
         ok(yk.object.equals(expected, obj));
     });
 
+    test('object.values', function() {
+        var obj = {
+            'a': 1,
+            'b': 2,
+            'c': 3
+        };
+        var expected = [1, 2, 3];
+        var actual = yk.object.values(obj);
+        ok(yk.array.equals(expected, actual))
+    });
+
     test('util.Pair', function() {
         var pair = new yk.util.Pair('hoge', 'fuga');
         equal('hoge', pair.getFirst());
