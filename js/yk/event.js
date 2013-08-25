@@ -79,10 +79,18 @@ define(['yk/base'], function() {
      * @param {yk.event.Event} evt
      */
     yk.event.EventTarget.prototype.dispatchEvent = function(evt) {
-        var listeners = this.handlers_[yk.assertInstanceof(evt, yk.event.Event).type];
+        var listeners = this.getHandlers(yk.assertInstanceof(evt, yk.event.Event).type);
         listeners && listeners.forEach(function(each) {
             each.call(this, evt);
         }, this);
     };
 
+    /**
+     * @param {string} type
+     * @return {Array.<function>}
+     * @protected
+     */
+    yk.event.EventTarget.prototype.getHandlers = function(type) {
+        return this.handlers_[type];
+    };
 });
