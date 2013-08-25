@@ -253,7 +253,7 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
     /**
      * @param {xhr} xhr
      */
-    yk.ui.DynamicComponent.prototype.failure = yk.abstractMethod;
+    yk.ui.DynamicComponent.prototype.failure = yk.nullFunction;
 
 
     /**
