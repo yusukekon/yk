@@ -121,7 +121,10 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
 
         var disposeOnClose = yk.isDef(opt_disposeOnClose) ? yk.assertBoolean(opt_disposeOnClose) : false;
         if (disposeOnClose) {
-            yk.delay(this.dispose, 1000);
+            var self = this;
+            setTimeout(function () {
+                self.dispose();
+            }, 1000);
         }
     };
 
