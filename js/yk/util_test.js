@@ -213,6 +213,17 @@ define(['yk/util'], function() {
         ok(t.equals(t3))
     });
 
+    test('math.sum', function() {
+        equal(55, yk.math.sum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        equal(0, yk.math.sum(1, -1, 2, -2, 3, -3));
+    });
+
+    test('math.average', function() {
+        equal(5.5, yk.math.average(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        // scale は 2
+        equal(3.33, yk.math.average(2, 3, 5));
+    });
+
     test('collection.MultiMap', function() {
         var sut = new yk.collection.MultiMap();
         sut.put('a', 1);
