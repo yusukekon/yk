@@ -730,6 +730,12 @@ define(['yk/base'], function() {
     yk.collection.MultiMap = function() {
 
         /**
+         * @type {Array.<*>}
+         * @private
+         */
+        this.order_ = [];
+
+        /**
          * @type {Object.<string, Array>}
          * @private
          */
@@ -743,9 +749,17 @@ define(['yk/base'], function() {
      */
     yk.collection.MultiMap.prototype.put = function(key, value) {
         if ( !(key in this.values_) ) {
+            this.order_.push(key);
             this.values_[key] = [];
         }
         this.values_[key].push(value);
+    };
+
+    /**
+     * @return {Array.<*>}
+     */
+    yk.collection.MultiMap.prototype.keys = function() {
+        return this.order_;
     };
 
     /**
@@ -761,10 +775,10 @@ define(['yk/base'], function() {
      * @param {*=} opt_scope
      */
     yk.collection.MultiMap.prototype.forEach = function(f, opt_scope) {
-        var i = 0;
         var scope = opt_scope || this;
-        for (var key in this.values_) {
-            f.call(scope, this.get(key), key, i++);
+        for (var i = 0; i < this.order_.length; i++) {
+            var key = this.order_[i];
+            f.call(scope, this.get(key), key, i);
         }
     };
 
