@@ -251,11 +251,14 @@ define(['yk/base'], function() {
 
     /**
      *
-     * @param {string|number} date
+     * @param {string|number} opt_date
      * @return {Date}
      */
-    yk.util.nativeDate = function(date) {
-        var d = new Date(date);
+    yk.util.nativeDate = function(opt_date) {
+        var d = new Date(opt_date || null);
+        if (isNaN(d)) {
+            throw new Error('illegal date format: ' + date);
+        }
         // ミリ秒は考慮しない
         d.setMilliseconds(0);
         return d;
