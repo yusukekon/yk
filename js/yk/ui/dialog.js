@@ -5,7 +5,7 @@ define(['yk/ui'], function() {
     /**
      * @param {$|Element|string} opt_parent
      * @constructor
-     * @inherits {yk.ui.Component}
+     * @extends {yk.ui.Component}
      */
     yk.ui.dialog.Dialog = function(opt_parent) {
         yk.super(this);

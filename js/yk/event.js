@@ -7,7 +7,7 @@ define(['yk/base'], function() {
      * @param {string} type
      * @param {Object=} opt_data
      * @constructor
-     * @inherits {yk.Object}
+     * @extends {yk.Object}
      */
     yk.event.Event = function(target, type, opt_data) {
         yk.super(this);
@@ -31,7 +31,7 @@ define(['yk/base'], function() {
 
     /**
      * @constructor
-     * @inherits {yk.Object}
+     * @extends {yk.Object}
      */
     yk.event.EventTarget = function() {
         yk.super(this);

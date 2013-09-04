@@ -59,6 +59,7 @@ define(['yk/util'], function() {
     /**
      * @param {string} url
      * @constructor
+     * @extends {yk.Object}
      */
     yk.net.HttpBuilder = function(url) {
 
@@ -158,7 +159,7 @@ define(['yk/util'], function() {
      * @param {string} key
      * @param {?string|Array.<string>} value
      * @constructor
-     * @inherits {yk.util.Pair}
+     * @extends {yk.util.Pair}
      */
     yk.net.HttpKeyValue = function(key, value) {
         yk.super(this, yk.assertString(key), this.assertValue_(value));
@@ -213,6 +214,7 @@ define(['yk/util'], function() {
     /**
      * @param {string} query
      * @constructor
+     * @extends {yk.Object}
      */
     yk.net.Query = function(query) {
         yk.super(this);

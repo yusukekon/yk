@@ -177,7 +177,7 @@ define(['yk/base'], function() {
      * @param {F} first
      * @param {S} second
      * @constructor
-     * @inherits {yk.Object}
+     * @extends {yk.Object}
      * @template F,S
      */
     yk.util.Pair = function(first, second) {
@@ -203,6 +203,7 @@ define(['yk/base'], function() {
     /**
      * @param {*...} var_args
      * @constructor
+     * @extends {yk.Object}
      */
     yk.util.Tuple = function(var_args) {
         yk.super(this);
@@ -269,7 +270,7 @@ define(['yk/base'], function() {
      * @param {number} timeInMillies
      * @param {yk.util.Timezone} opt_timezone
      * @constructor
-     * @inherits {yk.Object}
+     * @extends {yk.Object}
      */
     yk.util.DateTime = function(timeInMillis, opt_timezone) {
         yk.super(this);
@@ -433,7 +434,7 @@ define(['yk/base'], function() {
      *
      * @param {number} timeInMillis
      * @constructor
-     * @inherits {yk.util.DateTime}
+     * @extends {yk.util.DateTime}
      */
     yk.util.UtcDateTime = function(timeInMillis) {
         yk.super(this, timeInMillis, yk.util.Timezone.UTC);
@@ -511,7 +512,7 @@ define(['yk/base'], function() {
      *
      * @param {yk.util.DateTime} datetime
      * @constructor
-     * @inherits {yk.Object}
+     * @extends {yk.Object}
      */
     yk.util.Date = function(datetime) {
         yk.super(this);
@@ -589,7 +590,7 @@ define(['yk/base'], function() {
      *
      * @param {yk.util.DateTime} datetime
      * @constructor
-     * @inherits {yk.Object}
+     * @extends {yk.Object}
      */
     yk.util.Time = function(datetime) {
         yk.super(this);
@@ -666,6 +667,7 @@ define(['yk/base'], function() {
      * @param {string} name
      * @param {number} offset
      * @constructor
+     * @extends {yk.Object}
      */
     yk.util.Timezone = function(name, offset) {
         yk.super(this);
@@ -725,7 +727,7 @@ define(['yk/base'], function() {
 
     /**
      * @constructor
-     * @inherits {yk.Object}
+     * @extends {yk.Object}
      */
     yk.collection.MultiMap = function() {
 

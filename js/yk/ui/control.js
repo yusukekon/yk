@@ -5,7 +5,7 @@ define(['yk/ui'], function() {
     /**
      * @param {Object} opt_options
      * @constructor
-     * @inherits {yk.ui.Component}
+     * @extends {yk.ui.Component}
      */
     yk.ui.Control = function(opt_options) {
         yk.super(this);
@@ -59,7 +59,7 @@ define(['yk/ui'], function() {
      *
      * @param {Object} opt_options
      * @constructor
-     * @inherits {yk.ui.Control}
+     * @extends {yk.ui.Control}
      */
     yk.ui.control.NativeControl = function(opt_options) {
         yk.super(this, opt_options);
@@ -98,7 +98,7 @@ define(['yk/ui'], function() {
      *
      * @param {Object} opt_options
      * @constructor
-     * @inherits {yk.ui.Control}
+     * @extends {yk.ui.Control}
      */
     yk.ui.control.CustomControl = function(opt_options) {
         yk.super(this, opt_options);
@@ -108,7 +108,7 @@ define(['yk/ui'], function() {
     /**
      * @param {Object=} opt_options
      * @constructor
-     * @inherits {yk.ui.control.NativeControl}
+     * @extends {yk.ui.control.NativeControl}
      */
     yk.ui.control.Textbox = function(opt_options) {
         yk.super(this, opt_options);
@@ -148,7 +148,7 @@ define(['yk/ui'], function() {
      * @param {Object=} opt_options
      * @param {string=} opt_label
      * @constructor
-     * @inherits {yk.ui.control.NativeControl}
+     * @extends {yk.ui.control.NativeControl}
      */
     yk.ui.control.Checkbox = function(opt_options, opt_label) {
         yk.super(this, opt_options);
@@ -209,7 +209,7 @@ define(['yk/ui'], function() {
      * @param {Object=} opt_options
      * @param {string=} opt_label
      * @constructor
-     * @inherits {yk.ui.control.NativeControl}
+     * @extends {yk.ui.control.NativeControl}
      */
     yk.ui.control.RadioButton = function(group, opt_options, opt_label) {
         yk.super(this, opt_options);
@@ -278,7 +278,7 @@ define(['yk/ui'], function() {
      * });
      * @param {Object=} opt_options
      * @constructor
-     * @inherits {yk.ui.control.NativeControl}
+     * @extends {yk.ui.control.NativeControl}
      */
     yk.ui.control.RadioButtons = function(opt_options) {
         yk.super(this, opt_options);
@@ -372,7 +372,7 @@ define(['yk/ui'], function() {
      * @param {Array.<yk.ui.Pair>} choices
      * @param {Object=} opt_options
      * @constructor
-     * @inherits {yk.ui.control.NativeControl}
+     * @extends {yk.ui.control.NativeControl}
      */
     yk.ui.control.Selectbox = function(choices, opt_options) {
         yk.super(this, opt_options);
@@ -437,7 +437,7 @@ define(['yk/ui'], function() {
     /**
      * @param {Object=} opt_options
      * @constructor
-     * @inherits {yk.ui.control.NativeControl}
+     * @extends {yk.ui.control.NativeControl}
      */
     yk.ui.control.Hidden = function(opt_options) {
         yk.super(this, opt_options);
@@ -453,7 +453,7 @@ define(['yk/ui'], function() {
     /**
      * @param {Object=} opt_options
      * @constructor
-     * @inherits {yk.ui.control.NativeControl}
+     * @extends {yk.ui.control.NativeControl}
      */
     yk.ui.control.Button = function(opt_options) {
         yk.super(this, opt_options);

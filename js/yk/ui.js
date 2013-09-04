@@ -8,7 +8,7 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
      * c.render($element);
      *
      * @constructor
-     * @inherits {yk.Object}
+     * @extends {yk.Object}
      */
     yk.ui.Component = function() {
         yk.super(this);
@@ -193,7 +193,7 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
      * @param {string} url
      * @param {string=} opt_dataType
      * @constructor
-     * @inherits {yk.ui.Component}
+     * @extends {yk.ui.Component}
      */
     yk.ui.DynamicComponent = function(url, opt_dataType) {
         yk.super(this);
@@ -263,7 +263,7 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
      * @param {yk.ui.DynamicComponent} target
      * @param {string|Element} opt_parentEl
      * @constructor
-     * @inherits {yk.ui.Component}
+     * @extends {yk.ui.Component}
      */
     yk.ui.Loading = function(target, opt_parentEl) {
 
