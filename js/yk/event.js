@@ -3,29 +3,29 @@ define(['yk/base'], function() {
     yk.package('yk.event');
 
     /**
-     * @param {*} target
      * @param {string} type
      * @param {Object=} opt_data
+     * @param {*=} opt_target
      * @constructor
      * @extends {yk.Object}
      */
-    yk.event.Event = function(target, type, opt_data) {
+    yk.event.Event = function(type, opt_data, opt_target) {
         yk.super(this);
-
-        /**
-         * @type {*}
-         */
-        this.target = target;
 
         /**
          * @type {string}
          */
-        this.type = type;
+        this.type = yk.assertString(type);
 
         /**
          * @type {?*}
          */
         this.data = opt_data || null;
+
+        /**
+         * @type {?*}
+         */
+        this.target = opt_target || null;
     };
     yk.inherits(yk.event.Event, yk.Object);
 
@@ -72,7 +72,7 @@ define(['yk/base'], function() {
      * @param {*=} opt_data
      */
     yk.event.EventTarget.prototype.fire = function(type, opt_data) {
-        this.dispatchEvent(new yk.event.Event(this, type, opt_data));
+        this.dispatchEvent(new yk.event.Event(type, opt_data));
     };
 
     /**
@@ -80,6 +80,9 @@ define(['yk/base'], function() {
      */
     yk.event.EventTarget.prototype.dispatchEvent = function(evt) {
         var listeners = this.getHandlers(yk.assertInstanceof(evt, yk.event.Event).type);
+        if (!evt.target) {
+            evt.target = this;
+        }
         listeners && listeners.forEach(function(each) {
             each.call(this, evt);
         }, this);

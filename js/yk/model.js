@@ -92,7 +92,7 @@ define(['yk/event'], function() {
 
     /** @override */
     yk.Model.prototype.fire = function(type, opt_data) {
-        this.dispatchEvent(new yk.model.Event(this, type, opt_data));
+        this.dispatchEvent(new yk.model.Event(type, opt_data, this));
     };
 
     /**
