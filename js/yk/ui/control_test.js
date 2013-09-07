@@ -20,13 +20,9 @@ require(['yk/ui/control'], function() {
         equal('hoge2', textbox.value());
 
         var rootEl = $sandbox.children()[0];
-        equal('span', rootEl.tagName.toLowerCase());
-        equal('control-textbox', rootEl.className);
-
-        var textEl = rootEl.children[0];
-        equal('text', textEl.type);
-        equal('sample', textEl.name);
-        equal('hoge2', textEl.value);
+        equal('text', rootEl.type);
+        equal('sample', rootEl.name);
+        equal('hoge2', rootEl.value);
     });
 
     module('ui.control.Checkbox', {
