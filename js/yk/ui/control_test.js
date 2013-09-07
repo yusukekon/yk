@@ -38,6 +38,15 @@ require(['yk/ui/control'], function() {
         ok(called);
     });
 
+    test('ui.control.Textbox.wrap', function() {
+        var textbox = $('<input type="text" value="hoge">');
+        var wrapped = yk.ui.control.Textbox.wrap(textbox);
+        equal('hoge', wrapped.value());
+
+        wrapped.value('fuga');
+        equal('fuga', textbox.val());
+    });
+
     module('ui.control.Checkbox', {
         setup: function() {
             $sandbox = $('#sandbox');
@@ -91,6 +100,16 @@ require(['yk/ui/control'], function() {
         ok(called);
     });
 
+    test('ui.control.Checkbox.wrap', function() {
+        var checkbox = $('<input type="checkbox" name="check" value="hoge">');
+        var wrapped = yk.ui.control.Checkbox.wrap(checkbox);
+        equal('hoge', wrapped.value());
+        ok(!wrapped.checked());
+
+        wrapped.checked(true);
+        ok(checkbox.prop('checked'));
+    });
+
     module('ui.control.RadioButton', {
         setup: function() {
             $sandbox = $('#sandbox');
@@ -121,6 +140,9 @@ require(['yk/ui/control'], function() {
         equal('1', radio.checked().value());
         ok(radio.getButtons()[0].checked());
         ok(!radio.getButtons()[1].checked());
+
+        radio.checkValueOf('2');
+        equal('2', radio.value());
     });
 
     test('ui.control.RadioButton event', function() {
@@ -131,5 +153,21 @@ require(['yk/ui/control'], function() {
         equal('2', radio.checked().value());
         ok(!radio.getButtons()[0].checked());
         ok(radio.getButtons()[1].checked());
+    });
+
+    test('ui.control.RadioButtons.wrap', function() {
+        var buttonSize = 3;
+        // 最後のボタンを選択されてる
+        var checkedValue = 2;
+        var radioGroup = $('<div id="parent"></div>');
+        for (var i = 0; i < buttonSize; i++) {
+            $('<input type="radio" name="hoge">').val(String(i)).prop('checked', i === checkedValue).appendTo(radioGroup);
+        }
+
+        var wrapped = yk.ui.control.RadioButtons.wrap(radioGroup);
+        equal(String(checkedValue), wrapped.value());
+
+        wrapped.checkValueOf(String(0));
+        equal('0', wrapped.value());
     });
 });

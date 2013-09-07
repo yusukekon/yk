@@ -48,6 +48,18 @@ define(['yk/ui'], function() {
     };
 
     /**
+     * @param {$} $el
+     * @return {yk.ui.Control}
+     */
+    yk.ui.Control.prototype.setElement = function($el) {
+        if (this.$el_) {
+            this.dispose();
+        }
+        this.$el_ = $el;
+        return this;
+    };
+
+    /**
      * @type {?string|Array.<string>}
      */
     yk.ui.Control.prototype.value = yk.abstractFuntion;
@@ -75,6 +87,7 @@ define(['yk/ui'], function() {
         yk.super(this, opt_options);
     };
     yk.inherits(yk.ui.control.NativeControl, yk.ui.Control);
+
 
     /**
      * @return {$}
@@ -123,8 +136,13 @@ define(['yk/ui'], function() {
     yk.inherits(yk.ui.control.Textbox, yk.ui.control.NativeControl);
 
     /** @override */
+    yk.ui.control.Textbox.wrap = function($el) {
+        return /** @type {yk.ui.control.Textbox} */(new yk.ui.control.Textbox().setElement($el));
+    };
+
+    /** @override */
     yk.ui.control.Textbox.prototype.createDom = function() {
-        this.$el_ = $('<input type="text">').prop(this.options);
+        this.setElement($('<input type="text">').prop(this.options));
     };
 
     /**
@@ -182,19 +200,34 @@ define(['yk/ui'], function() {
     };
     yk.inherits(yk.ui.control.Checkbox, yk.ui.control.NativeControl);
 
+    /**
+     * @param {$} $el
+     * @return {yk.ui.control.Checkbox}
+     */
+    yk.ui.control.Checkbox.wrap = function($el) {
+        return /** @type {yk.ui.control.Checkbox} */(new yk.ui.control.Checkbox({
+            checked: yk.assertBoolean($el.prop('checked'))
+        }).setElement($el));
+    };
+
+    /** @override */
+    yk.ui.control.Checkbox.prototype.setElement = function($el) {
+        yk.super(this, 'setElement', $el);
+        this.bind('change', function(evt) {
+            this.checked_ = !this.checked_;
+        }, this);
+        return this;
+    };
+
     /** @override */
     yk.ui.control.Checkbox.prototype.createDom = function() {
-        this.$el_ = $('<input type="checkbox">').prop(this.options);
+        this.setElement($('<input type="checkbox">').prop(this.options));
         if (this.label_) {
             if (!this.$el_.prop('id')) {
                 this.$el_.prop('id', this.hashcode());
             }
             this.$el_.after($('<label>').prop('for', this.$el_.prop('id')).text(this.label_));
         }
-
-        this.bind('change', function(evt) {
-            this.checked_ = !this.checked_;
-        }, this);
     };
 
     /**
@@ -202,15 +235,14 @@ define(['yk/ui'], function() {
      * @return {boolean}
      */
     yk.ui.control.Checkbox.prototype.checked = function(opt_checked) {
-        if (yk.isDef(opt_checked)) {
-            if (this.checked_!== opt_checked) {
-                var current = this.checked_;
-                this.checked_ = yk.assertBoolean(opt_checked);
-                this.fire(yk.ui.control.Event.CHANGE, {
-                    before: current,
-                    after: this.checked_
-                });
-            }
+        if (yk.isDef(opt_checked) && this.checked_!== opt_checked) {
+            var current = this.checked_;
+            this.checked_ = yk.assertBoolean(opt_checked);
+            this.getInput().prop('checked', this.checked_);
+            this.fire(yk.ui.control.Event.CHANGE, {
+                before: current,
+                after: this.checked_
+            });
         }
         return this.checked_;
     };
@@ -245,18 +277,35 @@ define(['yk/ui'], function() {
     };
     yk.inherits(yk.ui.control.RadioButton , yk.ui.control.NativeControl);
 
+    /**
+     * @param {yk.ui.control.RadioButtons} group
+     * @param {$} $el
+     * @return {yk.ui.control.RadioButton}
+     */
+    yk.ui.control.RadioButton.wrap = function(group, $el) {
+        return /** @type {yk.ui.control.RadioButton} */(new yk.ui.control.RadioButton(group, {
+            value: $el.val()
+        }).setElement($el));
+    };
+
+    /** @override */
+    yk.ui.control.RadioButton.prototype.setElement = function($el) {
+        yk.super(this, 'setElement', $el);
+        this.bind('change', this.handleChange_, this);
+        this.listen(yk.ui.control.Event.CHANGE, this.handleChange_, this);
+        return this;
+    };
+
+
     /** @override */
     yk.ui.control.RadioButton.prototype.createDom = function() {
-        this.$el_ = $('<input type="radio">').prop(this.options);
+        this.setElement($('<input type="radio">').prop(this.options));
         if (this.label_) {
             if (!this.$el_.prop('id')) {
                 this.$el_.prop('id', this.hashcode());
             }
             this.$el_.after($('<label>').prop('for', this.$el_.prop('id')).text(this.label_));
         }
-
-        this.bind('change', this.handleChange_);
-        this.listen(yk.ui.control.Event.CHANGE, this.handleChange_);
     };
 
     /**
@@ -273,16 +322,15 @@ define(['yk/ui'], function() {
      * @return {boolean}
      */
     yk.ui.control.RadioButton.prototype.checked = function(opt_checked, opt_fireChangeEvent) {
-        if (yk.isDef(opt_checked)) {
-            if (this.checked_!== opt_checked) {
-                var fireChangeEvent = yk.isDef(opt_fireChangeEvent) ? yk.assertBoolean(opt_fireChangeEvent) : true;
-                var current = this.checked_;
-                this.checked_ = yk.assertBoolean(opt_checked);
-                fireChangeEvent && this.fire(yk.ui.control.Event.CHANGE, {
-                    before: current,
-                    after: this.checked_
-                });
-            }
+        if (yk.isDef(opt_checked) && this.checked_!== opt_checked) {
+            var fireChangeEvent = yk.isDef(opt_fireChangeEvent) ? yk.assertBoolean(opt_fireChangeEvent) : true;
+            var current = this.checked_;
+            this.checked_ = yk.assertBoolean(opt_checked);
+            this.getInput().prop('checked', this.checked_);
+            fireChangeEvent && this.fire(yk.ui.control.Event.CHANGE, {
+                before: current,
+                after: this.checked_
+            });
         }
         return this.checked_;
     };
@@ -293,6 +341,7 @@ define(['yk/ui'], function() {
      *     default: 1,
      *     alignVertical: true
      * });
+     *
      * @param {Object=} opt_options
      * @constructor
      * @extends {yk.ui.control.NativeControl}
@@ -315,6 +364,43 @@ define(['yk/ui'], function() {
     yk.inherits(yk.ui.control.RadioButtons, yk.ui.control.CustomControl);
 
     /**
+     * @param {$} $parent
+     * @return {yk.ui.control.RadioButtons}
+     */
+    yk.ui.control.RadioButtons.wrap = function($parent) {
+        var radio = /** @type {yk.ui.control.RadioButtons} */(new yk.ui.control.RadioButtons().setElement($parent));
+
+        var checked = null;
+        $('input[type=radio]', $parent).each(function(i, el) {
+            var button = yk.ui.control.RadioButton.wrap(radio, $(el))
+            if (button.getInput().prop('checked')) {
+                // チェックされてるのは一つだけ
+                yk.assert(!radio.checked());
+                radio.checked(button);
+            }
+            radio.add_(button);
+        });
+        return radio;
+    };
+
+
+    /** @override */
+    yk.ui.control.RadioButtons.prototype.setElement = function($el) {
+        yk.super(this, 'setElement', $el);
+        this.listen(yk.ui.control.Event.CHANGE, function(evt) {
+            var checked = this.checked_;
+            if (evt.data) {
+                checked = yk.assertInstanceof(evt.data, yk.ui.control.RadioButton);
+            }
+            this.inputs_.forEach(function(input) {
+                input.checked(input.equals(checked), false);
+            }, this);
+            this.checked_ = checked;
+        }, this);
+        return this;
+    };
+
+    /**
      * buttons.add({
      *     value: '1'
      * }, 'label');
@@ -322,7 +408,15 @@ define(['yk/ui'], function() {
      * @param {string=} opt_label
      */
     yk.ui.control.RadioButtons.prototype.add = function(opt_options, opt_label) {
-        this.inputs_.push(new yk.ui.control.RadioButton(this, opt_options, opt_label));
+        this.add_(new yk.ui.control.RadioButton(this, opt_options, opt_label));
+    };
+
+    /**
+     * @param {yk.ui.control.RadioButton} button
+     * @private
+     */
+    yk.ui.control.RadioButtons.prototype.add_ = function(button) {
+        this.inputs_.push(button);
     };
 
     /**
@@ -334,41 +428,52 @@ define(['yk/ui'], function() {
 
     /** @override */
     yk.ui.control.RadioButtons.prototype.createDom = function() {
-        this.$el_ = $('<div>');
+        this.setElement($('<div>'));
 
-        var self = this;
         this.inputs_.forEach(function(input) {
-            input.setOption('name', self.getOption('name'));
-            var checked = input.getOption('value') === self.getOption('default');
+            input.setOption('name', this.getOption('name'));
+            var checked = input.getOption('value') === this.getOption('default');
             input.setOption('checked', checked);
             if (checked) {
-                self.checked_ = input;
+                this.checked_ = input;
             }
-            self.addChild(input);
-        });
-
-        this.listen(yk.ui.control.Event.CHANGE, function(evt) {
-            var checked = yk.assertInstanceof(evt.data, yk.ui.control.RadioButton);
-            this.inputs_.forEach(function(input) {
-                input.checked(input.equals(checked), false);
-            });
-            this.checked_ = checked;
-        });
+            this.addChild(input);
+        }, this);
     };
 
     /** @override */
     yk.ui.control.RadioButtons.prototype.value = function() {
-        if (!this.checked) {
+        if (!this.checked_) {
             return null;
         }
         return this.checked_.value();
     };
 
     /**
+     * @param {yk.ui.control.RadioButton=} opt_checked
      * @return {?yk.ui.control.RadioButton}
      */
-    yk.ui.control.RadioButtons.prototype.checked = function() {
+    yk.ui.control.RadioButtons.prototype.checked = function(opt_checked) {
+        if (opt_checked && yk.assertInstanceof(opt_checked, yk.ui.control.RadioButton)) {
+            this.checked_ = opt_checked;
+        }
         return this.checked_;
+    };
+
+    /**
+     * @param {string} value
+     */
+    yk.ui.control.RadioButtons.prototype.checkValueOf = function(value) {
+        if (yk.assertString(value) === this.value()) {
+            return;
+        }
+
+        this.inputs_.forEach(function(input) {
+            if (value === input.value()) {
+                this.checked_ = input;
+                this.fire(yk.ui.control.Event.CHANGE);
+            }
+        }, this);
     };
 
     /** @override */
@@ -411,28 +516,27 @@ define(['yk/ui'], function() {
     };
     yk.inherits(yk.ui.control.Selectbox, yk.ui.control.NativeControl);
 
-    /** @override */
-    yk.ui.control.Selectbox.prototype.createDom = function() {
-        this.$el_ = $('<select></select>').prop(this.options);
-        (this.choices_ || []).forEach(function(each) {
-            $('<option></option>').prop('value', each.getSecond()).text(each.getFirst()).appendTo(this.$el_);
-        }, this);
-        this.$el_.val(this.value_);
-
-        this.bind('change', function(evt) {
-            this.handleChange_(evt);
-        }, this);
-        this.listen('change', function(evt) {
-            this.handleChange_(evt);
-        }, this);
+    /**
+     * @param {$} $el
+     * @return {yk.ui.control.Selectbox}
+     */
+    yk.ui.control.Selectbox.wrap = function($el) {
+        var choices = $el.find('option').map(function(i, el) {
+            var option = $(el);
+            return new yk.util.Pair(option.text(), option.val());
+        });
+        return /** @type {yk.ui.control.Selectbox} */ new yk.ui.control.Selectbox(choices, {
+            value: $el.val()
+        }).setElement($el);
     };
 
-    /**
-     * @param {Event} evt
-     * @private
-     */
-    yk.ui.control.Selectbox.prototype.handleChange_ = function(evt) {
-        this.value_ = this.$el_.val();
+    /** @override */
+    yk.ui.control.Selectbox.prototype.createDom = function() {
+        this.setElement($('<select></select>').prop(this.options));
+        (this.choices_ || []).forEach(function(each) {
+            $('<option></option>').text(each.getFirst().val(each.getSecond())).appendTo(this.$el_);
+        }, this);
+        this.$el_.val(this.value_);
     };
 
     /**
@@ -444,10 +548,18 @@ define(['yk/ui'], function() {
         if (opt_value === undefined) {
             return yk.super(this, 'value');
         }
-        if (this.getInput()) {
-            this.$el_.val(opt_value || null);
-        } else {
-            this.setOption('value', 'opt_value');
+
+        var current = this.value();
+        if (current !== yk.assertString(opt_value)) {
+            if (this.getInput()) {
+                this.$el_.val(opt_value);
+            } else {
+                this.setOption('value', opt_value);
+            }
+            this.fire(yk.ui.control.Event.CHANGE, {
+                before: current,
+                after: opt_value
+            });
         }
         return opt_value;
     };
@@ -487,4 +599,3 @@ define(['yk/ui'], function() {
         throw Error('yk.ui.control.Button has not value.');
     };
 });
-
