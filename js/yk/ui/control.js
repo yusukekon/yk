@@ -509,10 +509,10 @@ define(['yk/ui'], function() {
         this.choices_ = choices;
 
         /**
-         * @type {string}
+         * @type {?string}
          * @private
          */
-        this.value_ = this.options['value'];
+        this.value_ = this.options['value'] || null;
     };
     yk.inherits(yk.ui.control.Selectbox, yk.ui.control.NativeControl);
 
@@ -534,7 +534,7 @@ define(['yk/ui'], function() {
     yk.ui.control.Selectbox.prototype.createDom = function() {
         this.setElement($('<select></select>').prop(this.options));
         (this.choices_ || []).forEach(function(each) {
-            $('<option></option>').text(each.getFirst().val(each.getSecond())).appendTo(this.$el_);
+            $('<option></option>').text(each.getFirst()).val(each.getSecond()).appendTo(this.$el_);
         }, this);
         this.$el_.val(this.value_);
     };

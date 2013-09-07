@@ -170,4 +170,58 @@ require(['yk/ui/control'], function() {
         wrapped.checkValueOf(String(0));
         equal('0', wrapped.value());
     });
+
+    module('ui.control.Selectbox', {
+        setup: function() {
+            $sandbox = $('#sandbox');
+            var choices = [
+                new yk.util.Pair('one', '1'),
+                new yk.util.Pair('two', '2'),
+                new yk.util.Pair('three', '3')
+            ];
+            selectbox = new yk.ui.control.Selectbox(choices, {
+                name: 'sample',
+                value: '1'
+            });
+        },
+        teardown: function() {
+            selectbox.dispose();
+        }
+    });
+
+    test('ui.control.Selectbox', function() {
+        selectbox.render($sandbox);
+
+        equal('1', selectbox.value());
+
+        selectbox.value('2');
+        equal('2', selectbox.value());
+    });
+
+    test('ui.control.Selectbox event', function() {
+        selectbox.render($sandbox);
+
+        var called = false;
+        selectbox.listen(yk.ui.control.Event.CHANGE, function(evt) {
+            called = true;
+            equal('1', evt.data.before);
+            equal('3', evt.data.after);
+        });
+
+        selectbox.value('3');
+        ok(called);
+    });
+
+    test('ui.control.Selectbox.wrap', function() {
+        var choiceSize = 3;
+        var select = $('<select name="hoge"></select>');
+        for (var i = 0; i < choiceSize; i++) {
+            $('<option></option>').val(String(i)).text(String(i)).appendTo(select);
+        }
+        var wrapped = yk.ui.control.Selectbox.wrap(select);
+        ok('0', wrapped.value());
+
+        wrapped.value('2');
+        equal('2', wrapped.value());
+    });
 });
