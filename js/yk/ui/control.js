@@ -3,6 +3,16 @@ define(['yk/ui'], function() {
     yk.package('yk.ui.control');
 
     /**
+     * @enum
+     * @type {string}
+     */
+    yk.ui.control.Event = {
+        CHANGE: 'yk.ui.Control.Event.CHANGE',
+        ENABLE: 'yk.ui.Control.Event.ENABLE',
+        DISABLE: 'yk.ui.Control.Event.DISABLE'
+    };
+
+    /**
      * @param {Object} opt_options
      * @constructor
      * @extends {yk.ui.Component}
@@ -82,7 +92,10 @@ define(['yk/ui'], function() {
     yk.ui.control.NativeControl.prototype.disabled = function(opt_disabled) {
         if (yk.isDef(opt_disabled)) {
             var disabled = yk.assertBoolean(opt_disabled);
-            this.getInput().prop('disabled', disabled);
+            if (disabled !== this.disabled()) {
+                this.getInput().prop('disabled', disabled);
+                this.fire(disabled ? yk.ui.control.Event.DISABLE : yk.ui.control.Event.ENABLE);
+            }
             return disabled;
         }
         return this.getInput().prop('disabled');
@@ -123,11 +136,20 @@ define(['yk/ui'], function() {
         if (opt_value === undefined) {
             return yk.super(this, 'value');
         }
+        var current = this.value();
+        if (current === opt_value) {
+            return current;
+        }
+
         if (this.getInput()) {
             this.$el_.val(opt_value);
         } else {
-            this.setOption('value', 'opt_value');
+            this.setOption('value', opt_value);
         }
+        this.fire(yk.ui.control.Event.CHANGE, {
+            before: current,
+            after: opt_value
+        });
         return opt_value;
     };
 
@@ -170,28 +192,26 @@ define(['yk/ui'], function() {
             this.$el_.after($('<label>').prop('for', this.$el_.prop('id')).text(this.label_));
         }
 
-        var self = this;
         this.bind('change', function(evt) {
-            self.handleChange_(evt);
-        });
-        this.listen('change', function(evt) {
-            self.handleChange_(evt);
-            this.$el_.prop('checked', this.checked_);
-        });
+            this.checked_ = !this.checked_;
+        }, this);
     };
 
     /**
-     * @param {Event} evt
-     * @private
-     */
-    yk.ui.control.Checkbox.prototype.handleChange_ = function(evt) {
-        this.checked_ = !this.checked_;
-    };
-
-    /**
+     * @param {boolean=} opt_checked
      * @return {boolean}
      */
-    yk.ui.control.Checkbox.prototype.checked = function() {
+    yk.ui.control.Checkbox.prototype.checked = function(opt_checked) {
+        if (yk.isDef(opt_checked)) {
+            if (this.checked_!== opt_checked) {
+                var current = this.checked_;
+                this.checked_ = yk.assertBoolean(opt_checked);
+                this.fire(yk.ui.control.Event.CHANGE, {
+                    before: current,
+                    after: this.checked_
+                });
+            }
+        }
         return this.checked_;
     };
 
@@ -236,7 +256,7 @@ define(['yk/ui'], function() {
         }
 
         this.bind('change', this.handleChange_);
-        this.listen('change', this.handleChange_);
+        this.listen(yk.ui.control.Event.CHANGE, this.handleChange_);
     };
 
     /**
@@ -244,18 +264,27 @@ define(['yk/ui'], function() {
      * @private
      */
     yk.ui.control.RadioButton.prototype.handleChange_ = function(evt) {
-        this.group_.fire('change', this);
+        this.group_.fire(yk.ui.control.Event.CHANGE, this);
     };
 
     /**
      * @param {boolean=} opt_checked
+     * @param {boolean=} opt_fireChangeEvent
      * @return {boolean}
      */
-    yk.ui.control.RadioButton.prototype.checked = function(opt_checked) {
-        if (opt_checked !== undefined) {
-            this.checked_ = opt_checked;
+    yk.ui.control.RadioButton.prototype.checked = function(opt_checked, opt_fireChangeEvent) {
+        if (yk.isDef(opt_checked)) {
+            if (this.checked_!== opt_checked) {
+                var fireChangeEvent = yk.isDef(opt_fireChangeEvent) ? yk.assertBoolean(opt_fireChangeEvent) : true;
+                var current = this.checked_;
+                this.checked_ = yk.assertBoolean(opt_checked);
+                fireChangeEvent && this.fire(yk.ui.control.Event.CHANGE, {
+                    before: current,
+                    after: this.checked_
+                });
+            }
         }
-        return Boolean(this.checked_);
+        return this.checked_;
     };
 
     /**
@@ -318,10 +347,10 @@ define(['yk/ui'], function() {
             self.addChild(input);
         });
 
-        this.listen('change', function(evt) {
-            var checked = evt.data;
+        this.listen(yk.ui.control.Event.CHANGE, function(evt) {
+            var checked = yk.assertInstanceof(evt.data, yk.ui.control.RadioButton);
             this.inputs_.forEach(function(input) {
-                input.checked(input.equals(checked));
+                input.checked(input.equals(checked), false);
             });
             this.checked_ = checked;
         });
@@ -346,9 +375,12 @@ define(['yk/ui'], function() {
     yk.ui.control.RadioButtons.prototype.disabled = function(opt_disabled) {
         if (yk.isDef(opt_disabled)) {
             var disabled = yk.assertBoolean(opt_disabled);
-            this.inputs_.forEach(function(radio) {
-                radio.disabled(disabled);
-            });
+            if (this.disabled() !== disabled) {
+                this.inputs_.forEach(function(radio) {
+                    radio.disabled(disabled);
+                });
+                this.fire(disabled ? yk.ui.control.Event.DISABLE : yk.ui.control.Event.ENABLE);
+            }
             return disabled;
         }
         return this.inputs_.every(function(each) {

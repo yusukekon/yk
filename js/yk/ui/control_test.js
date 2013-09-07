@@ -25,6 +25,19 @@ require(['yk/ui/control'], function() {
         equal('hoge2', rootEl.value);
     });
 
+    test('ui.control.Textbox event', function() {
+        textbox.render($sandbox);
+        var called = false;
+        textbox.listen(yk.ui.control.Event.CHANGE, function(evt) {
+            called = true;
+            equal('hoge', evt.data.before);
+            equal('fuga', evt.data.after);
+        });
+
+        equal('fuga', textbox.value('fuga'));
+        ok(called);
+    });
+
     module('ui.control.Checkbox', {
         setup: function() {
             $sandbox = $('#sandbox');
@@ -62,12 +75,20 @@ require(['yk/ui/control'], function() {
         ok(check1.checked());
         ok(!check2.checked());
         ok(!check3.checked());
+    });
 
-        // 任意の change イベントで選択状態が反転する
-        check1.trigger('change');
-        check2.fire('change');
-        ok(!check1.checked());
-        ok(check2.checked());
+    test('ui.control.Checkbox event', function() {
+        var called = false;
+        check1.render($sandbox);
+
+        check1.listen(yk.ui.control.Event.CHANGE, function(evt) {
+            called = true;
+            ok(evt.data.before);
+            ok(!evt.data.after);
+            equal(this.checked(), evt.data.after);
+        });
+        ok(!check1.checked(false));
+        ok(called);
     });
 
     module('ui.control.RadioButton', {
@@ -100,18 +121,15 @@ require(['yk/ui/control'], function() {
         equal('1', radio.checked().value());
         ok(radio.getButtons()[0].checked());
         ok(!radio.getButtons()[1].checked());
+    });
 
-        // ネイティブイベントで 2 を選択。
-        radio.getButtons()[1].trigger('change');
+    test('ui.control.RadioButton event', function() {
+        radio.render($sandbox);
+
+        // カスタムイベントで 2 を選択
+        radio.getButtons()[1].fire(yk.ui.control.Event.CHANGE);
         equal('2', radio.checked().value());
         ok(!radio.getButtons()[0].checked());
         ok(radio.getButtons()[1].checked());
-
-        // カスタムイベントで再度 1 を選択
-        radio.getButtons()[0].fire('change');
-        equal('1', radio.checked().value());
-        ok(radio.getButtons()[0].checked());
-        ok(!radio.getButtons()[1].checked());
     });
-
 });
