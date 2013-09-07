@@ -214,13 +214,21 @@ define(function() {
     };
 
     /**
+     * @param {boolean} condition
+     * @param {string=} opt_msg
+     */
+    yk.assert = function(condition, opt_msg) {
+        if (yk.DEBUG && !condition) {
+           throw new Error('Assertion Error: ' + (opt_msg || ''));
+        }
+    };
+
+    /**
      * @param {*} value
      * @return {!*}
      */
     yk.assertDefAndNotNull = function(value) {
-        if (yk.DEBUG && (value === undefined || value === null)) {
-            throw Error("must not be null");
-        }
+        yk.assert(value != null, 'must not be null');
         return value;
     };
 
@@ -229,9 +237,7 @@ define(function() {
      * @return {string}
      */
     yk.assertString = function(value) {
-        if (yk.DEBUG && typeof value !== "string") {
-            throw TypeError('must be string');
-        }
+        yk.assert(typeof value === 'string', 'must be string');
         return /** @type {string} */(value);
     };
 
@@ -240,9 +246,7 @@ define(function() {
      * @return {number}
      */
     yk.assertNumber = function(value) {
-        if (yk.DEBUG && typeof value !== "number") {
-            throw TypeError('must be number');
-        }
+        yk.assert(typeof value === 'number', 'must be number');
         return /** @type {number} */(value);
     };
 
@@ -251,9 +255,7 @@ define(function() {
      * @return {boolean}
      */
     yk.assertBoolean = function(value) {
-        if (yk.DEBUG && typeof value !== "boolean") {
-            throw TypeError('must be boolean');
-        }
+        yk.assert(typeof value === 'boolean', 'must be boolean');
         return /** @type {boolean} */(value);
     };
 
@@ -262,9 +264,7 @@ define(function() {
      * @return {function}
      */
     yk.assertFunction = function(value) {
-        if (yk.DEBUG && typeof value !== "function") {
-            throw TypeError('must be function');
-        }
+        yk.assert(typeof value === 'function', 'must be function');
         return /** @type {function} */(value);
     };
 
@@ -273,9 +273,7 @@ define(function() {
      * @return Array.<*>
      */
     yk.assertArray = function(value) {
-        if (yk.DEBUG && !yk.isArray(value)) {
-            throw TypeError('must be array');
-        }
+        yk.assert(yk.isArray(value), 'must be array');
         return /** @type {Array.<*>} */(value);
     };
 
@@ -286,9 +284,7 @@ define(function() {
      * @template T
      */
     yk.assertInstanceof = function(value, clazz) {
-        if (yk.DEBUG && !(value instanceof clazz)) {
-            throw TypeError('must be ' + clazz);
-        }
+        yk.assert(value instanceof clazz, 'must be ' + clazz);
         return /** @type {T} */(value);
     };
 

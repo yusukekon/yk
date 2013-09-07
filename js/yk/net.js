@@ -202,7 +202,7 @@ define(['yk/util'], function() {
      * @private
      */
     yk.net.HttpKeyValue.prototype.assertValue_ = function(value) {
-        if (this.isMultipleValue_) {
+        if (yk.isArray(value)) {
             yk.assertArray(value).forEach(function(each) {
                 yk.assertString(each);
             });

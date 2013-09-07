@@ -7,6 +7,7 @@ requirejs.config({
 });
 
 require(['yk', '3rd/jquery'], function() {
+    yk.DEBUG = true;
     require(['yk/base_test']);
     require(['yk/event_test']);
     require(['yk/util_test']);
