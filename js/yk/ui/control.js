@@ -534,9 +534,18 @@ define(['yk/ui'], function() {
     yk.ui.control.Selectbox.prototype.createDom = function() {
         this.setElement($('<select></select>').prop(this.options));
         (this.choices_ || []).forEach(function(each) {
-            $('<option></option>').text(each.getFirst()).val(each.getSecond()).appendTo(this.$el_);
+            this.add(each.getFirst(), each.getSecond());
         }, this);
         this.$el_.val(this.value_);
+    };
+
+    /**
+     * @param {string} label
+     * @param {string=} opt_value
+     */
+    yk.ui.control.Selectbox.prototype.add = function(label, opt_value) {
+        var value = yk.assertString(opt_value || '');
+        $('<option></option>').text(yk.assertString(label)).val(value).appendTo(this.$el_);
     };
 
     /**
