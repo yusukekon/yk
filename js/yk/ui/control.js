@@ -600,7 +600,15 @@ define(['yk/ui'], function() {
 
     /** @override */
     yk.ui.control.Button.prototype.createDom = function() {
-        this.$el_ = $('<input type="button">').prop(this.options);
+        this.setElement($('<input type="button">').prop(this.options));
+    };
+
+    /**
+     * @param {$} $el
+     * @return {yk.ui.control.Button}
+     */
+    yk.ui.control.Button.wrap = function($el) {
+        return /** @type {yk.ui.control.Button} */(this.setElement($el));
     };
 
     /** @override */
