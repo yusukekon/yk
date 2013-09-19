@@ -72,6 +72,14 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
     };
 
     /**
+     * @param {string} selector
+     * @return {$}
+     */
+    yk.ui.Component.prototype.selector = function(selector) {
+        return $(yk.assertString(selector), this.$el_);
+    };
+
+    /**
      * @return {yk.ui.Component|Element=}
      */
     yk.ui.Component.prototype.getParent = function() {
