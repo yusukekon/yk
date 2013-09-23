@@ -277,7 +277,7 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
 
 
     /**
-     * @param {yk.ui.DynamicComponent} target
+     * @param {yk.ui.Component} target
      * @param {string|Element} opt_parentEl
      * @constructor
      * @extends {yk.ui.Component}
@@ -304,13 +304,13 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
         this.$el_ = $(yk.templates.loading);
     };
 
+    /** @override */
     yk.ui.Loading.prototype.render = function(opt_parentEl, opt_force) {
         yk.super(this, 'render', opt_parentEl || this.parentEl_, opt_force);
-        this.target_.render(this.parentEl_);
 
-        var self = this;
-        this.target_.getDeferred().always(function() {
-            self.dispose();
-        });
+        this.target_.listen(yk.ui.Component.EventType.ENTER_DOCUMENT, function() {
+            this.dispose();
+        }, this);
+        this.target_.render(this.parentEl_);
     };
 });
