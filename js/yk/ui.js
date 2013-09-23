@@ -289,7 +289,7 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
          * @type {yk.ui.DynamicComponent}
          * @private
          */
-        this.target_ = yk.assertInstanceof(target, yk.ui.DynamicComponent);
+        this.target_ = yk.assertInstanceof(target, yk.ui.Component);
 
         /**
          * @type {yk.ui.Component|Element=|string=} opt_parentEl
