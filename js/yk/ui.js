@@ -40,6 +40,14 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
     yk.inherits(yk.ui.Component, yk.event.EventTarget);
 
     /**
+     * @enum
+     * @type {string}
+     */
+    yk.ui.Component.EventType = {
+        ENTER_DOCUMENT: 'yk.ui.Component.Event.ENTER_DOCUMENT'
+    };
+
+    /**
      * @return {boolean}
      */
     yk.ui.Component.prototype.rendered = function() {
@@ -109,6 +117,7 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
             parentEl = this.parent_.getElement();
         }
         this.$el_.appendTo(parentEl);
+        this.fire(yk.ui.Component.EventType['ENTER_DOCUMENT']);
     };
 
     /**
