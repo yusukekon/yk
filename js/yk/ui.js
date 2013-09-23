@@ -191,7 +191,7 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
         this.$el_.bind(type, function(e) {
             listener.call(scope, {
                 target: self,
-                wrapped: e
+                nativeEvent: e
             });
         });
     };
