@@ -283,6 +283,7 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
      * @extends {yk.ui.Component}
      */
     yk.ui.Loading = function(target, opt_parentEl) {
+        yk.super(this);
 
         /**
          * @type {yk.ui.DynamicComponent}
