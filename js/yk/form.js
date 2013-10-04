@@ -5,7 +5,7 @@ define(['yk/net', 'yk/ui/control'], function() {
      * @param {string} uri
      * @param {yk.net.Method=} opt_method
      * @constructor
-     * @inherits {yk.Object}
+     * @extends {yk.Object}
      */
     yk.Form = function(uri, opt_method) {
         yk.super(this);

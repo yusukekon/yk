@@ -25,3 +25,9 @@ body {
   z-index: 9999;
   @include opacity(0.5);
 }
+
+label {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 4px 0 0;
+}

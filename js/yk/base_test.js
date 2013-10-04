@@ -64,5 +64,45 @@ require(['yk/base'], function() {
         ok(!obj1.equals(obj2));
     });
 
+    test('yk.assert', function() {
+        throws(function() {
+            yk.assert(false);
+        }, Error);
+
+        yk.assertDefAndNotNull('hoge');
+        throws(function() {
+            yk.assertDefAndNotNull(undefined);
+        }, Error);
+
+        yk.assertString('1');
+        throws(function() {
+            yk.assertString(1);
+        }, Error);
+
+        yk.assertNumber(1);
+        throws(function() {
+            yk.assertNumber('1');
+        }, Error);
+
+        yk.assertBoolean(false);
+        throws(function() {
+            yk.assertBoolean('false');
+        }, Error);
+
+        yk.assertFunction(yk.nullFunction);
+        throws(function() {
+            yk.assertFunction('function');
+        }, Error);
+
+        yk.assertArray([]);
+        throws(function() {
+            yk.assertArray(arguments);
+        }, Error);
+
+        yk.assertInstanceof(yk, Object);
+        throws(function() {
+            yk.assertInstanceof(yk, yk.Object);
+        }, Error);
+    });
 });
 

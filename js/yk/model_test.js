@@ -52,26 +52,7 @@ require(['yk/model'], function() {
         }
     };
 
-    test('mode.Model', function() {
-        var user = new User({
-            id: 1,
-            name: 'hoge',
-            groups: [100, 200],
-            birthday: '1984-08-13',
-            friends: [
-                {id: 2, name: 'a', birthday: '1985-12-24'},
-                {id: 3, name: 'b', birthday: '1985-11-11'}
-            ]
-        });
-        user.listen(yk.model.EventType.UPDATED, function(evt) {
-            ok(evt instanceof yk.model.Event);
-            equal(yk.model.EventType.UPDATED, evt.type);
-        });
-
-        user.fire(yk.model.EventType.UPDATED);
-    });
-
-    test('model.Event', function() {
+    test('model.Model', function() {
         // 何も渡さなければ、空の Model を生成
         ok(new User());
 
@@ -101,6 +82,32 @@ require(['yk/model'], function() {
         equal(200, json.groups[1]);
         equal(2, json.friends[0].id);
         equal(3, json.friends[1].id);
+    });
+
+    test('mode.Event', function() {
+        var user = new User({
+            id: 1,
+            name: 'hoge',
+            groups: [100, 200],
+            birthday: '1984-08-13',
+            friends: [
+                {id: 2, name: 'a', birthday: '1985-12-24'},
+                {id: 3, name: 'b', birthday: '1985-11-11'}
+            ]
+        });
+
+        var fired = false;
+        user.listen(yk.model.EventType.UPDATED, function(evt) {
+            fired = true;
+            ok(evt instanceof yk.model.Event);
+            equal(yk.model.EventType.UPDATED, evt.type);
+        });
+
+        user.modify({
+            id: 2
+        });
+        ok(fired);
+        equal(2, user.id);
     });
 
     test('Model error cases', function() {

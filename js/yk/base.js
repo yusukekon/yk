@@ -121,6 +121,26 @@ define(function() {
     };
 
     /**
+     * @param {function} fn
+     * @param {*} obj
+     * @param {...*} var_args
+     */
+    yk.bind = function(fn, obj, var_args) {
+        var args = yk.slice(arguments, 2);
+        // TODO: EC5 未満のブラウザに対応
+        return fn.bind(obj, args);
+    };
+
+    /**
+     *
+     * @param {function} fn
+     * @param {number} delay
+     */
+    yk.delay = function(fn, delay) {
+        yk.global.setTimeout(yk.bind(fn, this), delay);
+    };
+
+    /**
      * @TODO ちゃんとする
      * @return {string}
      */
@@ -163,20 +183,18 @@ define(function() {
         if (!target || !(target instanceof yk.Object)) {
             return false;
         }
-        return (this === target && this.hashcode() === target.hashcode());
+        return this.hashcode() === target.hashcode();
     };
 
     /**
      *
      */
     yk.Object.prototype.dispose = function() {
-        if (this.disposed_) {
+        if (!this.disposed_) {
             this.disposed_ = true;
-            return;
+            delete this.objectId_;
         }
-        delete this.objectId_;
     };
-
 
     /**
      * native な配列であれば true を返す
@@ -196,57 +214,66 @@ define(function() {
     };
 
     /**
-     * @param {!*} value
+     * @param {boolean} condition
+     * @param {string=} opt_msg
+     */
+    yk.assert = function(condition, opt_msg) {
+        if (yk.DEBUG && !condition) {
+           throw new Error('Assertion Error: ' + (opt_msg || ''));
+        }
+    };
+
+    /**
+     * @param {*} value
      * @return {!*}
      */
     yk.assertDefAndNotNull = function(value) {
-        if (yk.DEBUG && (value === undefined || value === null)) {
-            throw Error("must not be null");
-        }
+        yk.assert(value != null, 'must not be null');
         return value;
     };
 
     /**
-     * @param {string} value
+     * @param {*} value
      * @return {string}
      */
     yk.assertString = function(value) {
-        if (yk.DEBUG && typeof value !== "string") {
-            throw TypeError('must be string');
-        }
+        yk.assert(typeof value === 'string', 'must be string');
         return /** @type {string} */(value);
     };
 
     /**
-     * @param {number} value
+     * @param {*} value
      * @return {number}
      */
     yk.assertNumber = function(value) {
-        if (yk.DEBUG && typeof value !== "number") {
-            throw TypeError('must be number');
-        }
+        yk.assert(typeof value === 'number', 'must be number');
         return /** @type {number} */(value);
     };
 
     /**
-     * @param {boolean} value
+     * @param {*} value
      * @return {boolean}
      */
     yk.assertBoolean = function(value) {
-        if (yk.DEBUG && typeof value !== "boolean") {
-            throw TypeError('must be boolean');
-        }
+        yk.assert(typeof value === 'boolean', 'must be boolean');
         return /** @type {boolean} */(value);
     };
 
     /**
-     * @param value
+     * @param {*} value
+     * @return {function}
+     */
+    yk.assertFunction = function(value) {
+        yk.assert(typeof value === 'function', 'must be function');
+        return /** @type {function} */(value);
+    };
+
+    /**
+     * @param {*} value
      * @return Array.<*>
      */
     yk.assertArray = function(value) {
-        if (yk.DEBUG && !yk.isArray(value)) {
-            throw TypeError('must be array');
-        }
+        yk.assert(yk.isArray(value), 'must be array');
         return /** @type {Array.<*>} */(value);
     };
 
@@ -257,10 +284,7 @@ define(function() {
      * @template T
      */
     yk.assertInstanceof = function(value, clazz) {
-        if (yk.DEBUG && !(value instanceof clazz)) {
-            throw TypeError('must be ' + clazz);
-        }
+        yk.assert(value instanceof clazz, 'must be ' + clazz);
         return /** @type {T} */(value);
     };
-
 });

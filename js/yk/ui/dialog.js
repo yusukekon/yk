@@ -5,7 +5,7 @@ define(['yk/ui'], function() {
     /**
      * @param {$|Element|string} opt_parent
      * @constructor
-     * @inherits {yk.ui.Component}
+     * @extends {yk.ui.Component}
      */
     yk.ui.dialog.Dialog = function(opt_parent) {
         yk.super(this);
@@ -52,21 +52,10 @@ define(['yk/ui'], function() {
         this.$el_.fadeIn();
      };
 
-    /**
-     * @param {boolean=} opt_disposeOnClose
-     */
+    /** @override */
     yk.ui.dialog.Dialog.prototype.hide = function(opt_disposeOnClose) {
-        if (this.$el_) {
-            this.$el_.fadeOut();
-        }
+        yk.super(this, 'hide', opt_disposeOnClose);
         this.modal_(false);
-
-        var disposeOnClose = yk.isDef(opt_disposeOnClose) ? yk.assertBoolean(opt_disposeOnClose) : false;
-        if (disposeOnClose) {
-            setTimeout(function () {
-                this.dispose();
-            }.bind(this), 1000);
-        }
     };
 
     /**

@@ -12,6 +12,27 @@ define(['yk/util'], function() {
         equal(3, yk.object.get(obj, 'c', 3));
     });
 
+    test('object.containsKey', function() {
+        var obj = {
+            'a': 1,
+            'b': 2
+        };
+        ok(yk.object.containsKey(obj, 'a'));
+        ok(yk.object.containsKey(obj, 'b'));
+        ok(!yk.object.containsKey(obj, 'not found'));
+    });
+
+    test('object.containsValue', function() {
+        var now = yk.util.Date.now();
+        var obj = {
+            'a': 1,
+            'b': now
+        };
+        ok(yk.object.containsValue(obj, 1));
+        ok(yk.object.containsValue(obj, now));
+        ok(!yk.object.containsValue(obj, 'not found'));
+    });
+
     test('object.size', function() {
         equal(0, yk.object.size({}));
         equal(1, yk.object.size({a: 1}));
@@ -95,6 +116,37 @@ define(['yk/util'], function() {
             d: 400
         };
         ok(yk.object.equals(expected, obj));
+
+        // ownPropertyOnly フラグを立てると、存在しないプロパティは設定しない
+        yk.object.mixin(obj, {
+            z: 1000
+        }, true);
+        ok(yk.object.equals(expected, obj));
+    });
+
+    test('object.values', function() {
+        var obj = {
+            'a': 1,
+            'b': 2,
+            'c': 3
+        };
+        var expected = [1, 2, 3];
+        var actual = yk.object.values(obj);
+        ok(yk.array.equals(expected, actual))
+    });
+
+    test('string.startsWith', function() {
+        ok(yk.string.startsWith('abcde', 'a'));
+        ok(yk.string.startsWith('abcde', 'abc'));
+        ok(!yk.string.startsWith('abcde', 'b'));
+    });
+
+    test('array.flatten', function() {
+        var target = [
+            1, 2, [3, 4], 5, [6, 7], [8, 9], 10
+        ];
+        var expected = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        ok(yk.array.equals(expected, yk.array.flatten(target)));
     });
 
     test('util.Pair', function() {
@@ -161,4 +213,34 @@ define(['yk/util'], function() {
         ok(t.equals(t3))
     });
 
+    test('math.sum', function() {
+        equal(55, yk.math.sum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        equal(0, yk.math.sum(1, -1, 2, -2, 3, -3));
+    });
+
+    test('math.average', function() {
+        equal(5.5, yk.math.average(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        // scale は 2
+        equal(3.33, yk.math.average(2, 3, 5));
+    });
+
+    test('collection.MultiMap', function() {
+        var sut = new yk.collection.MultiMap();
+        sut.put('a', 1);
+        sut.put('a', 2);
+        sut.put('a', 3);
+        sut.put('b', 4);
+        sut.put('b', 5);
+
+        ok(yk.array.equals([1, 2, 3], sut.get('a')));
+        ok(yk.array.equals([4, 5], sut.get('b')));
+        equal(0, sut.get('c').length);
+
+        var lengthArr = sut.map(function(values, key) {
+            return values.length;
+        });
+        ok(2, lengthArr.length);
+        ok(3, lengthArr[0]);
+        ok(2, lengthArr[1]);
+    });
 });

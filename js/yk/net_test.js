@@ -39,6 +39,13 @@ require(['yk/net'], function() {
         equal('a=1&b=2', param['data']);
     });
 
+    module('yk.net', {
+        setup: function() {
+        },
+        teardown: function() {
+        }
+    });
+
     test('yk.net.serialize', function() {
         var params;
 
@@ -55,4 +62,18 @@ require(['yk/net'], function() {
         equal('%E3%81%BB%E3%81%92=%E3%81%B5%E3%81%8C', yk.net.serialize(params));
     });
 
+    test('yk.net.Query', function() {
+        var query = new yk.net.Query('a=1&b=2&c=');
+        equal('1', query.getValue('a'));
+        equal('2', query.getValue('b'));
+        equal('', query.getValue('c'));
+        ok(query.getValue('notfound') === null);
+
+        var expected = {
+            'a': '1',
+            'b': '2',
+            'c': ''
+        };
+        ok(yk.object.equals(expected, query.asJson()));
+    });
 });

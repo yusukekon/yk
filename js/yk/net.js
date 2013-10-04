@@ -59,6 +59,7 @@ define(['yk/util'], function() {
     /**
      * @param {string} url
      * @constructor
+     * @extends {yk.Object}
      */
     yk.net.HttpBuilder = function(url) {
 
@@ -156,9 +157,9 @@ define(['yk/util'], function() {
 
     /**
      * @param {string} key
-     * @param {string?|Array.<string>} value
+     * @param {?string|Array.<string>} value
      * @constructor
-     * @inherits {yk.util.Pair}
+     * @extends {yk.util.Pair}
      */
     yk.net.HttpKeyValue = function(key, value) {
         yk.super(this, yk.assertString(key), this.assertValue_(value));
@@ -200,12 +201,80 @@ define(['yk/util'], function() {
      * @private
      */
     yk.net.HttpKeyValue.prototype.assertValue_ = function(value) {
-        if (this.isMultipleValue_) {
+        if (yk.isArray(value)) {
             yk.assertArray(value).forEach(function(each) {
                 yk.assertString(each);
             });
             return value;
         }
         return yk.assertString(value);
+    };
+
+    /**
+     * @param {string} query
+     * @constructor
+     * @extends {yk.Object}
+     */
+    yk.net.Query = function(query) {
+        yk.super(this);
+
+        /**
+         * @type {Object.<string, yk.net.HttpKeyValue>}
+         * @private
+         */
+        this.params_ = {};
+
+        yk.net.Query.parse(query).forEach(function(keyValue) {
+            this.params_[keyValue.getKey()] = keyValue;
+        }, this);
+    };
+    yk.inherits(yk.net.Query, yk.Object);
+
+    /**
+     * @param {string} query
+     * @return {Array.<yk.net.HttpKeyValue>}
+     */
+    yk.net.Query.parse = function(query) {
+        var result = [];
+        yk.assertString(query).split('&').forEach(function(keyValue) {
+            var equalIndex = keyValue.indexOf('=');
+            if (equalIndex === -1) {
+                result.push(new yk.net.HttpKeyValue(keyValue, ''));
+            } else {
+                var key = keyValue.substring(0, equalIndex);
+                var value = keyValue.substring(equalIndex + 1);
+                result.push(new yk.net.HttpKeyValue(key, value));
+            }
+        });
+        return result;
+    };
+
+    /**
+     * @param {string} key
+     * @return {?string|Array.<string>}
+     */
+    yk.net.Query.prototype.getValue = function(key) {
+        if (!(key in this.params_)) {
+            return null;
+        }
+        return this.params_[key].getValue();
+    };
+
+    /**
+     * @return {Array.<yk.net.HttpKeyValue>}
+     */
+    yk.net.Query.prototype.params = function() {
+        return yk.object.values(this.params_);
+    };
+
+    /**
+     * @return {Array.<yk.net.HttpKeyValue>}
+     */
+    yk.net.Query.prototype.asJson = function() {
+        var json = {};
+        this.params().forEach(function(each) {
+            json[each.getKey()] = each.getValue();
+        }, this);
+        return json;
     };
 });

@@ -8,7 +8,7 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
      * c.render($element);
      *
      * @constructor
-     * @inherits {yk.Object}
+     * @extends {yk.Object}
      */
     yk.ui.Component = function() {
         yk.super(this);
@@ -20,7 +20,7 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
         this.$el_;
 
         /**
-         * @type {yk.ui.Component}
+         * @type {yk.ui.Component|Element=}
          * @protected
          */
         this.parent_;
@@ -72,7 +72,7 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
     };
 
     /**
-     * @return {yk.ui.Component}
+     * @return {yk.ui.Component|Element=}
      */
     yk.ui.Component.prototype.getParent = function() {
         return this.parent_;
@@ -101,6 +101,31 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
             parentEl = this.parent_.getElement();
         }
         this.$el_.appendTo(parentEl);
+    };
+
+    /**
+     */
+    yk.ui.Component.prototype.show = function() {
+        if (this.$el_) {
+            this.$el_.show();
+        }
+    };
+
+    /**
+     * @param {boolean=} opt_disposeOnClose
+     */
+    yk.ui.Component.prototype.hide = function(opt_disposeOnClose) {
+        if (this.$el_) {
+            this.$el_.fadeOut();
+        }
+
+        var disposeOnClose = yk.isDef(opt_disposeOnClose) ? yk.assertBoolean(opt_disposeOnClose) : false;
+        if (disposeOnClose) {
+            var self = this;
+            setTimeout(function () {
+                self.dispose();
+            }, 1000);
+        }
     };
 
     /**
@@ -168,7 +193,7 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
      * @param {string} url
      * @param {string=} opt_dataType
      * @constructor
-     * @inherits {yk.ui.Component}
+     * @extends {yk.ui.Component}
      */
     yk.ui.DynamicComponent = function(url, opt_dataType) {
         yk.super(this);
@@ -231,14 +256,14 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
     /**
      * @param {xhr} xhr
      */
-    yk.ui.DynamicComponent.prototype.failure = yk.abstractMethod;
+    yk.ui.DynamicComponent.prototype.failure = yk.nullFunction;
 
 
     /**
      * @param {yk.ui.DynamicComponent} target
      * @param {string|Element} opt_parentEl
      * @constructor
-     * @inherits {yk.ui.Component}
+     * @extends {yk.ui.Component}
      */
     yk.ui.Loading = function(target, opt_parentEl) {
 

@@ -220,3 +220,10 @@ body {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
   opacity: 0.5;
 }
+
+/* line 29, ../scss/web.scss */
+label {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 4px 0 0;
+}

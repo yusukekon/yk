@@ -15,7 +15,7 @@ define(['yk/event'], function() {
      * @param {yk.Model.EventType} type
      * @param {*=} opt_data
      * @constructor
-     * @inherits {yk.event.Event}
+     * @extends {yk.event.Event}
      */
     yk.model.Event = function(target, type, opt_data) {
         yk.super(this, target, type, opt_data);
@@ -26,7 +26,7 @@ define(['yk/event'], function() {
      *
      * @param {Object=} opt_json
      * @constructor
-     * @inherits {yk.event.EventTarget}
+     * @extends {yk.event.EventTarget}
      */
     yk.model.Model = function(opt_json) {
         yk.super(this);
@@ -92,6 +92,14 @@ define(['yk/event'], function() {
 
     /** @override */
     yk.Model.prototype.fire = function(type, opt_data) {
-        this.dispatchEvent(new yk.model.Event(this, type, opt_data));
+        this.dispatchEvent(new yk.model.Event(type, opt_data, this));
+    };
+
+    /**
+     * @param {!Object} data
+     */
+    yk.Model.prototype.modify = function(data) {
+        yk.object.mixin(this, data, false);
+        this.fire(yk.model.EventType.UPDATED);
     };
 });

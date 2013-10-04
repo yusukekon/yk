@@ -3,35 +3,35 @@ define(['yk/base'], function() {
     yk.package('yk.event');
 
     /**
-     * @param {*} target
      * @param {string} type
      * @param {Object=} opt_data
+     * @param {*=} opt_target
      * @constructor
-     * @inherits {yk.Object}
+     * @extends {yk.Object}
      */
-    yk.event.Event = function(target, type, opt_data) {
+    yk.event.Event = function(type, opt_data, opt_target) {
         yk.super(this);
-
-        /**
-         * @type {*}
-         */
-        this.target = target;
 
         /**
          * @type {string}
          */
-        this.type = type;
+        this.type = yk.assertString(type);
 
         /**
          * @type {?*}
          */
         this.data = opt_data || null;
+
+        /**
+         * @type {?*}
+         */
+        this.target = opt_target || null;
     };
     yk.inherits(yk.event.Event, yk.Object);
 
     /**
      * @constructor
-     * @inherits {yk.Object}
+     * @extends {yk.Object}
      */
     yk.event.EventTarget = function() {
         yk.super(this);
@@ -54,12 +54,16 @@ define(['yk/base'], function() {
      *
      * @param {!string} type
      * @param {!function} listener
+     * @param {*=} opt_scope
      */
-    yk.event.EventTarget.prototype.listen = function(type, listener) {
+    yk.event.EventTarget.prototype.listen = function(type, listener, opt_scope) {
         if (!this.handlers_[type]) {
             this.handlers_[type] = [];
         }
-        this.handlers_[type].push(listener);
+        var scope = opt_scope || this;
+        this.handlers_[type].push(function() {
+            listener.apply(scope, arguments);
+        });
     };
 
     /**
@@ -68,17 +72,28 @@ define(['yk/base'], function() {
      * @param {*=} opt_data
      */
     yk.event.EventTarget.prototype.fire = function(type, opt_data) {
-        this.dispatchEvent(new yk.event.Event(this, type, opt_data));
+        this.dispatchEvent(new yk.event.Event(type, opt_data));
     };
 
     /**
      * @param {yk.event.Event} evt
      */
     yk.event.EventTarget.prototype.dispatchEvent = function(evt) {
-        var listeners = this.handlers_[yk.assertInstanceof(evt, yk.event.Event).type];
+        var listeners = this.getHandlers(yk.assertInstanceof(evt, yk.event.Event).type);
+        if (!evt.target) {
+            evt.target = this;
+        }
         listeners && listeners.forEach(function(each) {
             each.call(this, evt);
         }, this);
     };
 
+    /**
+     * @param {string} type
+     * @return {Array.<function>}
+     * @protected
+     */
+    yk.event.EventTarget.prototype.getHandlers = function(type) {
+        return this.handlers_[type];
+    };
 });

@@ -4,10 +4,12 @@ define(['yk/base'], function() {
     yk.package('yk.string');
     yk.package('yk.object');
     yk.package('yk.array');
+    yk.package('yk.math');
+    yk.package('yk.collection');
 
 
     /**
-     * @param {Object} obj
+     * @param {!Object} obj
      * @param {string} key
      * @param {*=} opt_default
      */
@@ -17,7 +19,31 @@ define(['yk/base'], function() {
     };
 
     /**
-     * @param {Object} target
+     * @param {!Object} obj
+     * @param {*} key
+     */
+    yk.object.containsKey = function(obj, key) {
+        return key in obj;
+    };
+
+    /**
+     *
+     * @param obj
+     * @param value
+     */
+    yk.object.containsValue = function(obj, value) {
+        for (var key in obj) {
+            if (value instanceof yk.Object && value.equals(obj[key])) {
+                return true;
+            } else if (value === obj[key]) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    /**
+     * @param {!Object} target
      * @return {number}
      */
     yk.object.size = function(target) {
@@ -57,13 +83,33 @@ define(['yk/base'], function() {
     };
 
     /**
-     * @param {!*} target
-     * @param {!*} source
+     * @param {!Object} target
+     * @param {!Object} source
+     * @param {boolean=} opt_ownPropertyOnly
      */
-    yk.object.mixin = function(target, source) {
+    yk.object.mixin = function(target, source, opt_ownPropertyOnly) {
+        var ownPropertyOnly = yk.isDef(opt_ownPropertyOnly) ? yk.assertBoolean(opt_ownPropertyOnly) : false;
         for (var key in source) {
+            if (ownPropertyOnly && !target.hasOwnProperty(key)) {
+                continue;
+            }
             target[key] = source[key];
         }
+    };
+
+    /**
+     * @param {!Object} target
+     * @return {Array}
+     */
+    yk.object.values = function(target) {
+        var values = [];
+        for (var key in target) {
+            var value = target[key];
+            if (value != null) {
+                values.push(value);
+            }
+        }
+        return values;
     };
 
     /**
@@ -74,6 +120,32 @@ define(['yk/base'], function() {
      */
     yk.array.equals = function(a1, a2, opt_equality) {
         return yk.object.equals(a1, a2, opt_equality);
+    };
+
+    /**
+     * @param {Array.<Object|Array>} var_args
+     * @return {Array.<*>}
+     */
+    yk.array.flatten = function(var_args) {
+        var result = [];
+        for (var i = 0; i < arguments.length; i++) {
+            var each = arguments[i];
+            if (yk.isArray(each)) {
+                result = result.concat(yk.array.flatten.apply(null, each));
+            } else {
+                result.push(each);
+            }
+        }
+        return result;
+    };
+
+    /**
+     * @param {string} target
+     * @param {string} prefix
+     * @return {boolean}
+     */
+    yk.string.startsWith = function(target, prefix) {
+        return yk.assertString(target).indexOf(prefix) === 0;
     };
 
     /**
@@ -105,7 +177,7 @@ define(['yk/base'], function() {
      * @param {F} first
      * @param {S} second
      * @constructor
-     * @inherits {yk.Object}
+     * @extends {yk.Object}
      * @template F,S
      */
     yk.util.Pair = function(first, second) {
@@ -131,6 +203,7 @@ define(['yk/base'], function() {
     /**
      * @param {*...} var_args
      * @constructor
+     * @extends {yk.Object}
      */
     yk.util.Tuple = function(var_args) {
         yk.super(this);
@@ -174,16 +247,19 @@ define(['yk/base'], function() {
      * @return {number}
      */
     yk.util.currentTimeInMillis = function() {
-        return new Date().getTime();
+        return yk.util.nativeDate().getTime();
     };
 
     /**
      *
-     * @param {string|number} date
+     * @param {string|number} opt_date
      * @return {Date}
      */
-    yk.util.nativeDate = function(date) {
-        var d = new Date(date);
+    yk.util.nativeDate = function(opt_date) {
+        var d = new Date(opt_date || null);
+        if (isNaN(d)) {
+            throw new Error('illegal date format: ' + date);
+        }
         // ミリ秒は考慮しない
         d.setMilliseconds(0);
         return d;
@@ -194,7 +270,7 @@ define(['yk/base'], function() {
      * @param {number} timeInMillies
      * @param {yk.util.Timezone} opt_timezone
      * @constructor
-     * @inherits {yk.Object}
+     * @extends {yk.Object}
      */
     yk.util.DateTime = function(timeInMillis, opt_timezone) {
         yk.super(this);
@@ -358,7 +434,7 @@ define(['yk/base'], function() {
      *
      * @param {number} timeInMillis
      * @constructor
-     * @inherits {yk.util.DateTime}
+     * @extends {yk.util.DateTime}
      */
     yk.util.UtcDateTime = function(timeInMillis) {
         yk.super(this, timeInMillis, yk.util.Timezone.UTC);
@@ -436,7 +512,7 @@ define(['yk/base'], function() {
      *
      * @param {yk.util.DateTime} datetime
      * @constructor
-     * @inherits {yk.Object}
+     * @extends {yk.Object}
      */
     yk.util.Date = function(datetime) {
         yk.super(this);
@@ -514,7 +590,7 @@ define(['yk/base'], function() {
      *
      * @param {yk.util.DateTime} datetime
      * @constructor
-     * @inherits {yk.Object}
+     * @extends {yk.Object}
      */
     yk.util.Time = function(datetime) {
         yk.super(this);
@@ -591,6 +667,7 @@ define(['yk/base'], function() {
      * @param {string} name
      * @param {number} offset
      * @constructor
+     * @extends {yk.Object}
      */
     yk.util.Timezone = function(name, offset) {
         yk.super(this);
@@ -619,4 +696,104 @@ define(['yk/base'], function() {
     yk.util.Timezone.UTC = new yk.util.Timezone('utc', 0);
     yk.util.Timezone.JST = new yk.util.Timezone('utc', 9);
 
+    /**
+     * @type {number}
+     * @const
+     */
+    yk.math.DEFAULT_SCALE = 2;
+
+    /**
+     * @param {...Array<number>|number} var_args
+     * @return {number}
+     */
+    yk.math.sum = function(var_args) {
+        var args = yk.array.flatten(yk.slice(arguments));
+        return yk.assertNumber(args.reduce(function(total, val) {
+            return total+ val;
+        }, 0));
+    };
+
+    /**
+     * @param {...Array<number>|number} var_args
+     * @return {number}
+     */
+    yk.math.average = function(var_args) {
+        var args = yk.array.flatten(yk.slice(arguments));
+        var total = yk.math.sum(args);
+        // TODO: scale 指定できるように
+        var scale = Math.pow(10, yk.math.DEFAULT_SCALE);
+        return Math.round(total * scale / args.length) / scale;
+    };
+
+    /**
+     * @constructor
+     * @extends {yk.Object}
+     */
+    yk.collection.MultiMap = function() {
+
+        /**
+         * @type {Array.<*>}
+         * @private
+         */
+        this.order_ = [];
+
+        /**
+         * @type {Object.<string, Array>}
+         * @private
+         */
+        this.values_ = {};
+    };
+    yk.inherits(yk.collection.MultiMap, yk.Object);
+
+    /**
+     * @param {*} key
+     * @param {*} value
+     */
+    yk.collection.MultiMap.prototype.put = function(key, value) {
+        if ( !(key in this.values_) ) {
+            this.order_.push(key);
+            this.values_[key] = [];
+        }
+        this.values_[key].push(value);
+    };
+
+    /**
+     * @return {Array.<*>}
+     */
+    yk.collection.MultiMap.prototype.keys = function() {
+        return this.order_;
+    };
+
+    /**
+     * @param {*} key
+     * @return {!Array.<*>}
+     */
+    yk.collection.MultiMap.prototype.get = function(key) {
+        return this.values_[key] || [];
+    };
+
+    /**
+     * @param {function} f
+     * @param {*=} opt_scope
+     */
+    yk.collection.MultiMap.prototype.forEach = function(f, opt_scope) {
+        var scope = opt_scope || this;
+        for (var i = 0; i < this.order_.length; i++) {
+            var key = this.order_[i];
+            f.call(scope, this.get(key), key, i);
+        }
+    };
+
+    /**
+     * @param {function} f
+     * @param {*=} opt_scope
+     * @return {Array.<*>}
+     */
+    yk.collection.MultiMap.prototype.map = function(f, opt_scope) {
+        var result = [];
+        this.forEach(function(values, key, i) {
+            result.push(f.call(this, values, key, i));
+        }, opt_scope);
+        return result;
+    };
 });

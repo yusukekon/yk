@@ -3,7 +3,7 @@ define(['yk/ui'], function() {
 
     /**
      * @constructor
-     * @inherits {yk.ui.Component}
+     * @extends {yk.ui.Component}
      */
     yk.ui.layout.Table = function() {
         yk.super(this);
@@ -43,7 +43,7 @@ define(['yk/ui'], function() {
      * @param {Array.<string|yk.ui.Component>=} opt_cells
      * @param {string=} opt_tag
      * @constructor
-     * @inherits {yk.ui.Component}
+     * @extends {yk.ui.Component}
      */
     yk.ui.layout.Table.Row = function(opt_cells, opt_tag) {
         yk.super(this);
@@ -100,7 +100,7 @@ define(['yk/ui'], function() {
     /**
      * @param {string|yk.ui.Component} inner
      * @constructor
-     * @inherits {yk.ui.Component}
+     * @extends {yk.ui.Component}
      */
     yk.ui.layout.Table.Cell = function(inner) {
         yk.super(this);
