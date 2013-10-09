@@ -34,24 +34,26 @@ require(['yk/ui', 'yk/ui/control'], function() {
     });
 
     test('ui.Component event', function() {
-        /**
-         * ネイティブイベント(jQuery)
-         * component の内部要素に対してバインドするため、render 前に
-         * 実行すると内部で自動的に createDom を呼び出して dom を構築する。
-         */
-        var triggeredEvent = null;
-        component.bind('click', function(evt) {
-            triggeredEvent = evt;
-        });
-        component.trigger('click', 'hoge');
+        var called;
 
-        // target は component 自身
-        ok(component.equals(triggeredEvent.target));
-        equal('click', triggeredEvent.wrapped.type);
-        // 実際に発火された target は HTML 要素
-        equal(component.getElement()[0], triggeredEvent.wrapped.target);
-        // TODO: なぜか data が渡ってこない。。。
-        equal(/*'hoge'*/null, triggeredEvent.wrapped.data);
+        called = false;
+        component.listen('click', function(evt) {
+            called = true;
+            // target は component 自身
+            ok(component.equals(triggeredEvent.target));
+            equal('click', triggeredEvent.nativeEvent.type);
+            // 実際に発火された target は HTML 要素
+            equal(component.getElement()[0], triggeredEvent.nativeEvent.target);
+        });
+        component.fire('click', 'hoge');
+        ok(called);
+
+        called = false;
+        component.listen(yk.ui.Component.EventType.ENTER_DOCUMENT, function(evt) {
+            called = true;
+        });
+        component.render($sandbox);
+        ok(called);
     });
 
     module('ui.DynamicComponent', {

@@ -40,6 +40,14 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
     yk.inherits(yk.ui.Component, yk.event.EventTarget);
 
     /**
+     * @enum
+     * @type {string}
+     */
+    yk.ui.Component.EventType = {
+        ENTER_DOCUMENT: 'yk.ui.Component.Event.ENTER_DOCUMENT'
+    };
+
+    /**
      * @return {boolean}
      */
     yk.ui.Component.prototype.rendered = function() {
@@ -72,6 +80,14 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
     };
 
     /**
+     * @param {string} selector
+     * @return {$}
+     */
+    yk.ui.Component.prototype.selector = function(selector) {
+        return $(yk.assertString(selector), this.$el_);
+    };
+
+    /**
      * @return {yk.ui.Component|Element=}
      */
     yk.ui.Component.prototype.getParent = function() {
@@ -101,6 +117,7 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
             parentEl = this.parent_.getElement();
         }
         this.$el_.appendTo(parentEl);
+        this.fire(yk.ui.Component.EventType['ENTER_DOCUMENT']);
     };
 
     /**
@@ -174,7 +191,7 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
         this.$el_.bind(type, function(e) {
             listener.call(scope, {
                 target: self,
-                wrapped: e
+                nativeEvent: e
             });
         });
     };
@@ -260,18 +277,19 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
 
 
     /**
-     * @param {yk.ui.DynamicComponent} target
+     * @param {yk.ui.Component} target
      * @param {string|Element} opt_parentEl
      * @constructor
      * @extends {yk.ui.Component}
      */
     yk.ui.Loading = function(target, opt_parentEl) {
+        yk.super(this);
 
         /**
          * @type {yk.ui.DynamicComponent}
          * @private
          */
-        this.target_ = yk.assertInstanceof(target, yk.ui.DynamicComponent);
+        this.target_ = yk.assertInstanceof(target, yk.ui.Component);
 
         /**
          * @type {yk.ui.Component|Element=|string=} opt_parentEl
@@ -286,13 +304,13 @@ define(['3rd/jquery-template', 'yk/util', 'yk/net', 'yk/model', 'yk/templates'],
         this.$el_ = $(yk.templates.loading);
     };
 
+    /** @override */
     yk.ui.Loading.prototype.render = function(opt_parentEl, opt_force) {
         yk.super(this, 'render', opt_parentEl || this.parentEl_, opt_force);
-        this.target_.render(this.parentEl_);
 
-        var self = this;
-        this.target_.getDeferred().always(function() {
-            self.dispose();
-        });
+        this.target_.listen(yk.ui.Component.EventType.ENTER_DOCUMENT, function() {
+            this.dispose();
+        }, this);
+        this.target_.render(this.parentEl_);
     };
 });

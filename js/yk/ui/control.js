@@ -608,7 +608,7 @@ define(['yk/ui'], function() {
      * @return {yk.ui.control.Button}
      */
     yk.ui.control.Button.wrap = function($el) {
-        return /** @type {yk.ui.control.Button} */(this.setElement($el));
+        return /** @type {yk.ui.control.Button} */(new yk.ui.control.Button().setElement($el));
     };
 
     /** @override */
